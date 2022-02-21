@@ -1,0 +1,51 @@
+version: 2.1
+
+orbs:
+  composer: stockfiller/composer@2
+  php-cs-fixer: stockfiller/php-cs-fixer@1
+  phpunit: stockfiller/phpunit@1
+  php-coveralls: nekman/php-coveralls@2
+
+executors:
+  php81:
+    docker:
+      - image: php:8.1-alpine
+    resource_class: small
+
+jobs:
+  test_coverage:
+    executor: php81
+    environment:
+      CLOVER_PATH: coverage/clover.xml
+    steps:
+      - run:
+          name: Install PCOV and git
+          command: |-
+            apk add --update --no-cache ${PHPIZE_DEPS} git
+            pecl install pcov-1.0.6
+            docker-php-ext-enable pcov
+      - checkout
+      - composer/install_bin
+      - composer/install
+      - phpunit/test:
+          coverage: clover
+          coverage-path: "${CLOVER_PATH}"
+          src-path: src
+          test-path: tests
+      - php-coveralls/upload:
+          clover-path: "${CLOVER_PATH}"
+
+workflows:
+  master:
+    jobs:
+      - php-cs-fixer/fix:
+          executor: php81
+          rules: "@PSR2"
+          path: .
+          pre-steps:
+            - run: apk add --update --no-cache git openssh-client
+            - composer/install_bin
+          filters:
+            branches:
+              ignore: master
+      - test_coverage
