@@ -12,7 +12,11 @@ class Collection implements CollectionInterface
 
     public function __construct(iterable|callable $it)
     {
-        $it = is_callable($it) ? $it() : $it;
+        $it = match (true) {
+            $it instanceof self => $it->it,
+            is_callable($it) => $it(),
+            default => $it,
+        };
 
         if (!is_iterable($it)) {
             throw new InvalidArgument;
@@ -106,9 +110,9 @@ class Collection implements CollectionInterface
         return $this->toArray();
     }
 
-    public function toArray(): array
+    public function toArray(bool $onlyValues = false): array
     {
-        return iterable_to_array($this->it);
+        return iterable_to_array($this->it, $onlyValues);
     }
 
     final public function __serialize(): array
@@ -369,5 +373,35 @@ class Collection implements CollectionInterface
     public function referenceKeyValue(): self
     {
         return new self(iterable_reference_key_value($this->it));
+    }
+
+    public function zip(iterable ...$its): self
+    {
+        return new self(iterable_zip($this->it, ...$its));
+    }
+
+    public function some(callable $some): bool
+    {
+        return iterable_some($this->it, $some);
+    }
+
+    public function transpose(iterable ...$its): self
+    {
+        return new self(iterable_transpose($this->it, ...$its));
+    }
+
+    public function transform(callable $transformer): self
+    {
+        return new self(iterable_transform($this->it, $transformer));
+    }
+
+    public function takeWhile(callable $takeWhile): self
+    {
+        return new self(iterable_take_while($this->it, $takeWhile));
+    }
+
+    public function takeNth(int $step): self
+    {
+        return new self(iterable_take_nth($this->it, $step));
     }
 }

@@ -4,6 +4,8 @@ namespace Nekman\Collection;
 
 use Iterator;
 use IteratorIterator;
+use Nekman\Collection\Exceptions\InvalidArgument;
+use Nekman\Collection\Exceptions\InvalidReturnValue;
 use Nekman\Collection\Exceptions\ItemNotFound;
 use Traversable;
 
@@ -184,7 +186,7 @@ function iterable_extract(iterable $it, string $keyPath): iterable
     }
 }
 
-function iterable_filter(iterable $it, callable $filter = null): iterable
+function iterable_filter(iterable $it, ?callable $filter = null): iterable
 {
     if (!$filter) {
         $filter = "boolval";
@@ -230,7 +232,7 @@ function iterable_except(iterable $it, iterable $keys): iterable
 
     return iterable_reject(
         $it,
-        fn ($value, $key) => in_array($key, $keys)
+        fn($value, $key) => in_array($key, $keys)
     );
 }
 
@@ -238,7 +240,7 @@ function iterable_reject(iterable $it, callable $reject): iterable
 {
     return iterable_filter(
         $it,
-        fn ($value, $key) => !$reject($value, $key)
+        fn($value, $key) => !$reject($value, $key)
     );
 }
 
@@ -293,18 +295,20 @@ function iterable_sum(iterable $it): float|int
 {
     return iterable_reduce(
         $it,
-        fn (float|int $sum, float|int $number) => $sum + $number,
-        0.0
+        fn(float|int $sum, float|int $number) => $sum + $number,
+        0
     );
 }
 
-function iterable_to_array(iterable $it): array
+function iterable_to_array(iterable $it, bool $onlyValues = false): array
 {
-    return is_array($it)
-        ? $it
-        : iterator_to_array(
-            iterable_to_traversable($it)
-        );
+    if ($onlyValues) {
+        $it = iterable_values($it);
+    }
+
+    return iterator_to_array(
+        iterable_to_traversable($it)
+    );
 }
 
 function iterable_realize(iterable $it): iterable
@@ -354,7 +358,7 @@ function iterable_only(iterable $it, iterable $keys): iterable
 
     return iterable_filter(
         $it,
-        fn ($value, $key) => in_array($key, $keys, true)
+        fn($value, $key) => in_array($key, $keys, true)
     );
 }
 
@@ -402,9 +406,9 @@ function iterable_group_by_key(iterable $it, mixed $key): iterable
     return iterable_group_by(
         iterable_filter(
             $it,
-            fn ($item) => iterable_has($item, $key),
+            fn($item) => iterable_has($item, $key),
         ),
-        fn ($value) => iterable_get($value, $key)
+        fn($value) => iterable_get($value, $key)
     );
 }
 
@@ -607,7 +611,7 @@ function iterable_join(iterable $it, string $separator = ""): string
 {
     $joined = iterable_reduce(
         $it,
-        fn (string $joined, string $string) => $joined . $separator . $string,
+        fn(string $joined, string $string) => $joined . $separator . $string,
         ""
     );
 
@@ -624,7 +628,7 @@ function iterable_sort(iterable $it, callable $sort): iterable
 
     uasort(
         $array,
-        fn ($a, $b) => $sort($a[1], $b[1], $a[0], $b[0])
+        fn($a, $b) => $sort($a[1], $b[1], $a[0], $b[0])
     );
 
     return iterable_dereference_key_value($array);
@@ -641,11 +645,107 @@ function iterable_reference_key_value(iterable $it): iterable
 {
     return iterable_map(
         $it,
-        fn ($value, $key) => [$key, $value]
+        fn($value, $key) => [$key, $value]
     );
 }
 
 function iterable_to_string(iterable $it): string
 {
     return iterable_join($it);
+}
+
+function iterable_zip(iterable ...$its): iterable
+{
+    /* @var Iterator[] $iterators */
+    $iterators = iterable_map(
+        $its,
+        function ($it) {
+            $it = new IteratorIterator(iterable_to_traversable($it));
+            $it->rewind();
+            return $it;
+        }
+    );
+
+    while (true) {
+        $isMissingItems = false;
+        $zippedItem = [];
+
+        foreach ($iterators as $it) {
+            if (!$it->valid()) {
+                $isMissingItems = true;
+                break;
+            }
+
+            $zippedItem[$it->key()] = $it->current();
+            $it->next();
+        }
+
+        if (!$isMissingItems) {
+            yield $zippedItem;
+        } else {
+            break;
+        }
+    }
+}
+
+function iterable_some(iterable $it, callable $some): bool
+{
+    foreach ($it as $key => $value) {
+        if ($some($value, $key)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function iterable_transpose(iterable ...$its): iterable
+{
+    if (iterable_some($its, fn ($value) => !is_iterable($value))) {
+        throw new InvalidArgument('Can only transpose iterable of iterables.');
+    }
+
+    return iterable_map(
+        $its,
+        'Nekman\Collection\iterable_to_array'
+    );
+}
+
+function iterable_transform(iterable $it, callable $transformer): iterable
+{
+    $transformed = $transformer($it);
+
+    if (!is_iterable($transformed)) {
+        throw new InvalidReturnValue;
+    }
+
+    return $transformed;
+}
+
+function iterable_take_while(iterable $it, callable $takeWhile): iterable
+{
+    $shouldTake = true;
+
+    foreach ($it as $key => $value) {
+        if ($shouldTake) {
+            $shouldTake = $takeWhile($value, $key);
+        }
+
+        if ($shouldTake) {
+            yield $key => $value;
+        }
+    }
+}
+
+function iterable_take_nth(iterable $it, int $step): iterable
+{
+    $index = 0;
+
+    foreach ($it as $key => $value) {
+        if ($index % $step == 0) {
+            yield $key => $value;
+        }
+
+        $index++;
+    }
 }

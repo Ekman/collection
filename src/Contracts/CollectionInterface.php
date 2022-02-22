@@ -29,7 +29,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
 
     public function sum(): float|int;
 
-    public function toArray(): array;
+    public function toArray(bool $onlyValues = false): array;
 
     public function realize(): self;
 
@@ -130,4 +130,16 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function dereferenceKeyValue(): self;
 
     public function referenceKeyValue(): self;
+
+    public function zip(iterable ...$its): self;
+
+    public function some(callable $some): bool;
+
+    public function transpose(iterable ...$its): self;
+
+    public function transform(callable $transformer): self;
+
+    public function takeWhile(callable $takeWhile): self;
+
+    public function takeNth(int $step): self;
 }
