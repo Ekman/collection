@@ -35,89 +35,29 @@ class Collection implements CollectionInterface
         return new self(iterable_iterate($value, $iterable));
     }
 
-    public static function repeat(mixed $initial, int $nItems = -1): self
-    {
-        return new self(iterable_repeat($initial, $nItems));
-    }
-
     public static function range(int $start = 0, ?int $end = null, int $step = 1): self
     {
         return new self(iterable_range($start, $end, $step));
     }
 
-    public function map(callable $map): self
+    public static function repeat(mixed $initial, int $nItems = -1): self
     {
-        return new self(iterable_map($this->it, $map));
-    }
-
-    public function reduce(callable $reduce, mixed $initial): mixed
-    {
-        return iterable_reduce($this->it, $reduce, $initial);
-    }
-
-    final public function getIterator(): Traversable
-    {
-        return $this->toTraversable();
-    }
-
-    public function toTraversable(): Traversable
-    {
-        return iterable_to_traversable($this->it);
-    }
-
-    final public function count(): int
-    {
-        return $this->size();
-    }
-
-    public function size(): int
-    {
-        return iterable_size($this->it);
-    }
-
-    public function sum(): float|int
-    {
-        return iterable_sum($this->it);
-    }
-
-    public function realize(): self
-    {
-        return new self(iterable_realize($this->it));
-    }
-
-    public function keys(): self
-    {
-        return new self(iterable_keys($this->it));
-    }
-
-    public function indexBy(callable $indexBy): self
-    {
-        return new self(iterable_index_by($this->it, $indexBy));
-    }
-
-    public function flatten(int $levelsToFlatten = -1): self
-    {
-        return new self(iterable_flatten($this->it, $levelsToFlatten));
-    }
-
-    public function mapcat(callable $mapcat): self
-    {
-        return new self(iterable_mapcat($this->it, $mapcat));
-    }
-
-    final public function jsonSerialize(): array
-    {
-        return $this->toArray();
-    }
-
-    public function toArray(bool $onlyValues = false): array
-    {
-        return iterable_to_array($this->it, $onlyValues);
+        return new self(iterable_repeat($initial, $nItems));
     }
 
     final public function __serialize(): array
     {
         return $this->toArray();
+    }
+
+    final public function __toString(): string
+    {
+        return $this->toString();
+    }
+
+    public function toString(): string
+    {
+        return iterable_to_string($this->it);
     }
 
     final public function __unserialize(array $data): void
@@ -150,44 +90,24 @@ class Collection implements CollectionInterface
         return iterable_contains($this->it, $needle);
     }
 
-    public function values(): self
+    final public function count(): int
     {
-        return new self(iterable_values($this->it));
+        return $this->size();
     }
 
-    public function sort(callable $sort): self
+    public function size(): int
     {
-        return new self(iterable_sort($this->it, $sort));
-    }
-
-    public function min(): mixed
-    {
-        return iterable_min($this->it);
-    }
-
-    public function max(): mixed
-    {
-        return iterable_max($this->it);
-    }
-
-    public function partition(int $nItems): self
-    {
-        return new self(iterable_partition($this->it, $nItems));
-    }
-
-    final public function __toString(): string
-    {
-        return $this->toString();
-    }
-
-    public function toString(): string
-    {
-        return iterable_to_string($this->it);
+        return iterable_size($this->it);
     }
 
     public function cycle(): self
     {
         return new self(iterable_cycle($this->it));
+    }
+
+    public function dereferenceKeyValue(): self
+    {
+        return new self(iterable_dereference_key_value($this->it));
     }
 
     public function diff(iterable ...$its): self
@@ -225,6 +145,11 @@ class Collection implements CollectionInterface
         return iterable_every($this->it, $every);
     }
 
+    public function except(iterable $keys): self
+    {
+        return new self(iterable_except($this->it, $keys));
+    }
+
     public function extract(string $keyPath): self
     {
         return new self(iterable_extract($this->it, $keyPath));
@@ -246,24 +171,9 @@ class Collection implements CollectionInterface
         return $convertToIterable ? new self($first) : $first;
     }
 
-    public function except(iterable $keys): self
+    public function flatten(int $levelsToFlatten = -1): self
     {
-        return new self(iterable_except($this->it, $keys));
-    }
-
-    public function reject(callable $reject): self
-    {
-        return new self(iterable_reject($this->it, $reject));
-    }
-
-    public function slice(int $from, int $to = -1): self
-    {
-        return new self(iterable_slice($this->it, $from, $to));
-    }
-
-    public function only(iterable $keys): self
-    {
-        return new self(iterable_only($this->it, $keys));
+        return new self(iterable_flatten($this->it, $levelsToFlatten));
     }
 
     public function flip(): self
@@ -271,10 +181,25 @@ class Collection implements CollectionInterface
         return new self(iterable_flip($this->it));
     }
 
+    public function frequencies(): self
+    {
+        return new self(iterable_frequencies($this->it));
+    }
+
     public function get(mixed $key, bool $convertToIterable = false): mixed
     {
         $get = iterable_get($this->it, $key, $convertToIterable);
         return $convertToIterable ? new self($get) : $get;
+    }
+
+    final public function getIterator(): Traversable
+    {
+        return $this->toTraversable();
+    }
+
+    public function toTraversable(): Traversable
+    {
+        return iterable_to_traversable($this->it);
     }
 
     public function getOrDefault(mixed $key, mixed $default = null, bool $convertToIterable = false): mixed
@@ -298,19 +223,14 @@ class Collection implements CollectionInterface
         return iterable_has($this->it, $key);
     }
 
-    public function frequencies(): self
+    public function indexBy(callable $indexBy): self
     {
-        return new self(iterable_frequencies($this->it));
+        return new self(iterable_index_by($this->it, $indexBy));
     }
 
     public function interleave(iterable ...$its): self
     {
         return new self(iterable_interleave([$this->it, ...$its]));
-    }
-
-    public function take(int $nItems): self
-    {
-        return new self(iterable_take($this->it, $nItems));
     }
 
     public function interpose(mixed $separator): self
@@ -333,10 +253,60 @@ class Collection implements CollectionInterface
         return iterable_is_not_empty($this->it);
     }
 
+    public function join(string $separator = ""): string
+    {
+        return iterable_join($this->it, $separator);
+    }
+
+    final public function jsonSerialize(): array
+    {
+        return $this->toArray();
+    }
+
+    public function toArray(bool $onlyValues = false): array
+    {
+        return iterable_to_array($this->it, $onlyValues);
+    }
+
+    public function keys(): self
+    {
+        return new self(iterable_keys($this->it));
+    }
+
     public function last(bool $convertToIterable = false): mixed
     {
         $last = iterable_last($this->it, $convertToIterable);
         return $convertToIterable ? new self($last) : $last;
+    }
+
+    public function map(callable $map): self
+    {
+        return new self(iterable_map($this->it, $map));
+    }
+
+    public function mapcat(callable $mapcat): self
+    {
+        return new self(iterable_mapcat($this->it, $mapcat));
+    }
+
+    public function max(): mixed
+    {
+        return iterable_max($this->it);
+    }
+
+    public function min(): mixed
+    {
+        return iterable_min($this->it);
+    }
+
+    public function only(iterable $keys): self
+    {
+        return new self(iterable_only($this->it, $keys));
+    }
+
+    public function partition(int $nItems): self
+    {
+        return new self(iterable_partition($this->it, $nItems));
     }
 
     public function partitionBy(callable $partitionBy): self
@@ -349,14 +319,19 @@ class Collection implements CollectionInterface
         return new self(iterable_prepend($this->it, $value, $key));
     }
 
+    public function realize(): self
+    {
+        return new self(iterable_realize($this->it));
+    }
+
+    public function reduce(callable $reduce, mixed $initial): mixed
+    {
+        return iterable_reduce($this->it, $reduce, $initial);
+    }
+
     public function reduceRight(callable $reduceRight, mixed $initial): mixed
     {
         return iterable_reduce_right($this->it, $reduceRight, $initial);
-    }
-
-    public function reverse(): self
-    {
-        return new self(iterable_reverse($this->it));
     }
 
     public function reductions(callable $reductions, mixed $initial): self
@@ -364,59 +339,29 @@ class Collection implements CollectionInterface
         return new self(iterable_reductions($this->it, $reductions, $initial));
     }
 
-    public function join(string $separator = ""): string
-    {
-        return iterable_join($this->it, $separator);
-    }
-
-    public function dereferenceKeyValue(): self
-    {
-        return new self(iterable_dereference_key_value($this->it));
-    }
-
     public function referenceKeyValue(): self
     {
         return new self(iterable_reference_key_value($this->it));
     }
 
-    public function zip(iterable ...$its): self
+    public function reject(callable $reject): self
     {
-        return new self(iterable_zip($this->it, ...$its));
+        return new self(iterable_reject($this->it, $reject));
     }
 
-    public function some(callable $some): bool
+    public function reverse(): self
     {
-        return iterable_some($this->it, $some);
-    }
-
-    public function transpose(iterable ...$its): self
-    {
-        return new self(iterable_transpose($this->it, ...$its));
-    }
-
-    public function transform(callable $transformer): self
-    {
-        return new self(iterable_transform($this->it, $transformer));
-    }
-
-    public function takeWhile(callable $takeWhile): self
-    {
-        return new self(iterable_take_while($this->it, $takeWhile));
-    }
-
-    public function takeNth(int $step): self
-    {
-        return new self(iterable_take_nth($this->it, $step));
-    }
-
-    public function sizeIsBetween(int $fromSize, int $toSize): bool
-    {
-        return iterable_size_is_between($this->it, $fromSize, $toSize);
+        return new self(iterable_reverse($this->it));
     }
 
     public function sizeIs(int $size): bool
     {
         return iterable_size_is($this->it, $size);
+    }
+
+    public function sizeIsBetween(int $fromSize, int $toSize): bool
+    {
+        return iterable_size_is_between($this->it, $fromSize, $toSize);
     }
 
     public function sizeIsGreaterThan(int $size): bool
@@ -429,6 +374,21 @@ class Collection implements CollectionInterface
         return iterable_size_is_less_than($this->it, $size);
     }
 
+    public function slice(int $from, int $to = -1): self
+    {
+        return new self(iterable_slice($this->it, $from, $to));
+    }
+
+    public function some(callable $some): bool
+    {
+        return iterable_some($this->it, $some);
+    }
+
+    public function sort(callable $sort): self
+    {
+        return new self(iterable_sort($this->it, $sort));
+    }
+
     public function splitAt(int $position): self
     {
         return new self(iterable_split_at($this->it, $position));
@@ -437,5 +397,45 @@ class Collection implements CollectionInterface
     public function splitWith(callable $splitWith): self
     {
         return new self(iterable_split_with($this->it, $splitWith));
+    }
+
+    public function sum(): float|int
+    {
+        return iterable_sum($this->it);
+    }
+
+    public function take(int $nItems): self
+    {
+        return new self(iterable_take($this->it, $nItems));
+    }
+
+    public function takeNth(int $step): self
+    {
+        return new self(iterable_take_nth($this->it, $step));
+    }
+
+    public function takeWhile(callable $takeWhile): self
+    {
+        return new self(iterable_take_while($this->it, $takeWhile));
+    }
+
+    public function transform(callable $transformer): self
+    {
+        return new self(iterable_transform($this->it, $transformer));
+    }
+
+    public function transpose(iterable ...$its): self
+    {
+        return new self(iterable_transpose($this->it, ...$its));
+    }
+
+    public function values(): self
+    {
+        return new self(iterable_values($this->it));
+    }
+
+    public function zip(iterable ...$its): self
+    {
+        return new self(iterable_zip($this->it, ...$its));
     }
 }

@@ -5,50 +5,6 @@ use PHPUnit\Framework\TestCase;
 
 class FunctionsTest extends TestCase
 {
-    /** @dataProvider provideFromAndCreate */
-    public function testFrom($input, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->toArray(true));
-    }
-
-    /** @dataProvider provideFromAndCreate */
-    public function testNew($input, $expected)
-    {
-        $this->assertEquals($expected, (new Collection($input))->toArray(true));
-    }
-
-    public function provideFromAndCreate()
-    {
-        return [
-            "Test array" => [
-                [1, 2, 3],
-                [1, 2, 3],
-            ],
-            "Test iterable" => [
-                new ArrayIterator([1, 2, 3, 4]),
-                [1, 2, 3, 4],
-            ],
-            "Test generator function" => [
-                fn () => yield from [1, 2],
-                [1, 2]
-            ],
-            "Test iterable function" => [
-                fn () => [3, 4, 5],
-                [3, 4, 5]
-            ],
-            "Test collection" => [
-                Collection::from(["foo", "bar"]),
-                ["foo", "bar"],
-            ]
-        ];
-    }
-
-    /** @dataProvider provideAppend */
-    public function testAppend($input, $append, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->append($append)->toArray(true));
-    }
-
     public function provideAppend()
     {
         return [
@@ -58,12 +14,6 @@ class FunctionsTest extends TestCase
                 [1, 3, 3, 2, 1],
             ]
         ];
-    }
-
-    /** @dataProvider provideAverage */
-    public function testAverage($input, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->average());
     }
 
     public function provideAverage()
@@ -80,12 +30,6 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    /** @dataProvider provideCombine */
-    public function testCombine($input, $combine, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->combine($combine)->toArray());
-    }
-
     public function provideCombine()
     {
         return [
@@ -95,12 +39,6 @@ class FunctionsTest extends TestCase
                 ["a" => 1, "b" => 2]
             ]
         ];
-    }
-
-    /** @dataProvider provideConcat */
-    public function testConcat($input, $concat, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->concat(...$concat)->toArray());
     }
 
     public function provideConcat()
@@ -116,10 +54,40 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    /** @dataProvider provideMap */
-    public function testMap($input, $map, $expected)
+    public function provideDereferenceKeyValue()
     {
-        $this->assertEquals($expected, Collection::from($input)->map($map)->toArray(true));
+        return [
+            [
+                [[0, "a"], [1, "b"]],
+                ["a", "b"],
+            ]
+        ];
+    }
+
+    public function provideFromAndCreate()
+    {
+        return [
+            "Test array" => [
+                [1, 2, 3],
+                [1, 2, 3],
+            ],
+            "Test iterable" => [
+                new ArrayIterator([1, 2, 3, 4]),
+                [1, 2, 3, 4],
+            ],
+            "Test generator function" => [
+                fn() => yield from [1, 2],
+                [1, 2]
+            ],
+            "Test iterable function" => [
+                fn() => [3, 4, 5],
+                [3, 4, 5]
+            ],
+            "Test collection" => [
+                Collection::from(["foo", "bar"]),
+                ["foo", "bar"],
+            ]
+        ];
     }
 
     public function provideMap()
@@ -127,16 +95,47 @@ class FunctionsTest extends TestCase
         return [
             [
                 [1, 2, 3],
-                fn ($number) => $number * 2,
+                fn($number) => $number * 2,
                 [2, 4, 6]
             ]
         ];
     }
 
-    /** @dataProvider provideSize */
-    public function testSize($input, $expected)
+    public function provideReduce()
     {
-        $this->assertEquals($expected, Collection::from($input)->size());
+        return [
+            "Test sum" => [
+                [6, 4, 5],
+                fn($sum, $number) => $sum + $number,
+                0,
+                15,
+            ]
+        ];
+    }
+
+    public function provideReferenceKeyValue()
+    {
+        return [
+            [
+                ["a", "b"],
+                [[0, "a"], [1, "b"]],
+            ]
+        ];
+    }
+
+    public function provideReverse()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                [
+                    3 => 2,
+                    2 => 3,
+                    1 => 3,
+                    0 => 1,
+                ]
+            ]
+        ];
     }
 
     public function provideSize()
@@ -167,51 +166,6 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    /** @dataProvider provideReduce */
-    public function testReduce($input, $reduce, $initial, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->reduce($reduce, $initial));
-    }
-
-    public function provideReduce()
-    {
-        return [
-            "Test sum" => [
-                [6, 4, 5],
-                fn ($sum, $number) => $sum + $number,
-                0,
-                15,
-            ]
-        ];
-    }
-
-    /** @dataProvider provideReverse */
-    public function testReverse($input, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->reverse()->toArray());
-    }
-
-    public function provideReverse()
-    {
-        return [
-            [
-                [1, 3, 3, 2],
-                [
-                    3 => 2,
-                    2 => 3,
-                    1 => 3,
-                    0 => 1,
-                ]
-            ]
-        ];
-    }
-
-    /** @dataProvider provideSort */
-    public function testSort($input, $sort, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->sort($sort)->toArray(true));
-    }
-
     public function provideSort()
     {
         return [
@@ -223,20 +177,58 @@ class FunctionsTest extends TestCase
         ];
     }
 
+    /** @dataProvider provideAppend */
+    public function testAppend($input, $append, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->append($append)->toArray(true));
+    }
+
+    /** @dataProvider provideAverage */
+    public function testAverage($input, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->average());
+    }
+
+    /** @dataProvider provideCombine */
+    public function testCombine($input, $combine, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->combine($combine)->toArray());
+    }
+
+    /** @dataProvider provideConcat */
+    public function testConcat($input, $concat, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->concat(...$concat)->toArray());
+    }
+
     /** @dataProvider provideDereferenceKeyValue */
     public function testDereferenceKeyValue($input, $expected)
     {
         $this->assertEquals($expected, Collection::from($input)->dereferenceKeyValue()->toArray(true));
     }
 
-    public function provideDereferenceKeyValue()
+    /** @dataProvider provideFromAndCreate */
+    public function testFrom($input, $expected)
     {
-        return [
-            [
-                [[0, "a"], [1, "b"]],
-                ["a", "b"],
-            ]
-        ];
+        $this->assertEquals($expected, Collection::from($input)->toArray(true));
+    }
+
+    /** @dataProvider provideMap */
+    public function testMap($input, $map, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->map($map)->toArray(true));
+    }
+
+    /** @dataProvider provideFromAndCreate */
+    public function testNew($input, $expected)
+    {
+        $this->assertEquals($expected, (new Collection($input))->toArray(true));
+    }
+
+    /** @dataProvider provideReduce */
+    public function testReduce($input, $reduce, $initial, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->reduce($reduce, $initial));
     }
 
     /** @dataProvider provideReferenceKeyValue */
@@ -245,13 +237,21 @@ class FunctionsTest extends TestCase
         $this->assertEquals($expected, Collection::from($input)->referenceKeyValue()->toArray(true));
     }
 
-    public function provideReferenceKeyValue()
+    /** @dataProvider provideReverse */
+    public function testReverse($input, $expected)
     {
-        return [
-            [
-                ["a", "b"],
-                [[0, "a"], [1, "b"]],
-            ]
-        ];
+        $this->assertEquals($expected, Collection::from($input)->reverse()->toArray());
+    }
+
+    /** @dataProvider provideSize */
+    public function testSize($input, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->size());
+    }
+
+    /** @dataProvider provideSort */
+    public function testSort($input, $sort, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->sort($sort)->toArray(true));
     }
 }

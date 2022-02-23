@@ -766,7 +766,7 @@ function iterable_some(iterable $it, callable $some): bool
 
 function iterable_transpose(iterable ...$its): iterable
 {
-    if (iterable_some($its, fn ($value) => !is_iterable($value))) {
+    if (iterable_some($its, fn($value) => !is_iterable($value))) {
         throw new InvalidArgument('Can only transpose iterable of iterables.');
     }
 
