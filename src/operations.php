@@ -291,6 +291,71 @@ function iterable_size(iterable $it): int
         );
 }
 
+function iterable_size_is_between(iterable $it, int $fromSize, int $toSize): bool
+{
+    if ($fromSize > $toSize) {
+        $tmp = $toSize;
+        $toSize = $fromSize;
+        $fromSize = $tmp;
+    }
+
+    $itemsTempCount = 0;
+    foreach ($it as $value) {
+        $itemsTempCount++;
+
+        if ($itemsTempCount > $toSize) {
+            return false;
+        }
+    }
+
+    return $fromSize < $itemsTempCount && $itemsTempCount < $toSize;
+}
+
+function iterable_size_is(iterable $it, int $size): bool
+{
+    $itemsTempCount = 0;
+
+    foreach ($it as $value) {
+        $itemsTempCount++;
+
+        if ($itemsTempCount > $size) {
+            return false;
+        }
+    }
+
+    return $itemsTempCount == $size;
+}
+
+function iterable_size_is_greater_than(iterable $it, int $size): bool
+{
+    $itemsTempCount = 0;
+
+    foreach ($it as $value) {
+        $itemsTempCount++;
+
+        if ($itemsTempCount > $size) {
+            return true;
+        }
+    }
+
+    return $itemsTempCount > $size;
+}
+
+function iterable_size_is_less_than(iterable $it, int $size): bool
+{
+    $itemsTempCount = 0;
+
+    foreach ($it as $value) {
+        $itemsTempCount++;
+
+        if ($itemsTempCount > $size) {
+            return false;
+        }
+    }
+
+    return $itemsTempCount < $size;
+}
+
 function iterable_sum(iterable $it): float|int
 {
     return iterable_reduce(
@@ -748,4 +813,16 @@ function iterable_take_nth(iterable $it, int $step): iterable
 
         $index++;
     }
+}
+
+function iterable_split_at(iterable $it, int $position): iterable
+{
+    yield iterable_take($it, $position);
+    yield iterable_drop($it, $position);
+}
+
+function iterable_split_with(iterable $it, callable $splitWith): iterable
+{
+    yield iterable_take_while($it, $splitWith);
+    yield iterable_drop_while($it, $splitWith);
 }

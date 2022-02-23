@@ -5,7 +5,6 @@ namespace Nekman\Collection\Contracts;
 use Countable;
 use IteratorAggregate;
 use JsonSerializable;
-use phpDocumentor\Reflection\Types\ClassString;
 use Stringable;
 use Traversable;
 
@@ -26,6 +25,14 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function reduce(callable $reduce, mixed $initial): mixed;
 
     public function size(): int;
+
+    public function sizeIsBetween(int $fromSize, int $toSize): bool;
+
+    public function sizeIs(int $size): bool;
+
+    public function sizeIsGreaterThan(int $size): bool;
+
+    public function sizeIsLessThan(int $size): bool;
 
     public function sum(): float|int;
 
@@ -142,4 +149,8 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function takeWhile(callable $takeWhile): self;
 
     public function takeNth(int $step): self;
+
+    public function splitAt(int $position): self;
+
+    public function splitWith(callable $splitWith): self;
 }

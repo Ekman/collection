@@ -242,7 +242,8 @@ class Collection implements CollectionInterface
 
     public function first(bool $convertToIterable = false): mixed
     {
-        return iterable_first($this->it, $convertToIterable);
+        $first = iterable_first($this->it, $convertToIterable);
+        return $convertToIterable ? new self($first) : $first;
     }
 
     public function except(iterable $keys): self
@@ -272,12 +273,14 @@ class Collection implements CollectionInterface
 
     public function get(mixed $key, bool $convertToIterable = false): mixed
     {
-        return iterable_get($this->it, $key, $convertToIterable);
+        $get = iterable_get($this->it, $key, $convertToIterable);
+        return $convertToIterable ? new self($get) : $get;
     }
 
     public function getOrDefault(mixed $key, mixed $default = null, bool $convertToIterable = false): mixed
     {
-        return iterable_get_or_default($this->it, $key, $default, $convertToIterable);
+        $getOrDefault = iterable_get_or_default($this->it, $key, $convertToIterable);
+        return $convertToIterable ? new self($getOrDefault) : $getOrDefault;
     }
 
     public function groupBy(callable $groupBy): self
@@ -332,7 +335,8 @@ class Collection implements CollectionInterface
 
     public function last(bool $convertToIterable = false): mixed
     {
-        return iterable_last($this->it, $convertToIterable);
+        $last = iterable_last($this->it, $convertToIterable);
+        return $convertToIterable ? new self($last) : $last;
     }
 
     public function partitionBy(callable $partitionBy): self
@@ -403,5 +407,35 @@ class Collection implements CollectionInterface
     public function takeNth(int $step): self
     {
         return new self(iterable_take_nth($this->it, $step));
+    }
+
+    public function sizeIsBetween(int $fromSize, int $toSize): bool
+    {
+        return iterable_size_is_between($this->it, $fromSize, $toSize);
+    }
+
+    public function sizeIs(int $size): bool
+    {
+        return iterable_size_is($this->it, $size);
+    }
+
+    public function sizeIsGreaterThan(int $size): bool
+    {
+        return iterable_size_is_greater_than($this->it, $size);
+    }
+
+    public function sizeIsLessThan(int $size): bool
+    {
+        return iterable_size_is_less_than($this->it, $size);
+    }
+
+    public function splitAt(int $position): self
+    {
+        return new self(iterable_split_at($this->it, $position));
+    }
+
+    public function splitWith(callable $splitWith): self
+    {
+        return new self(iterable_split_with($this->it, $splitWith));
     }
 }
