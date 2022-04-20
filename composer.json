@@ -16,6 +16,11 @@
             "compatability/utilities.php"
         ]
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Nekman\\Collection\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Niklas Ekman",

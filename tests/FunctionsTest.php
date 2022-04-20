@@ -1,7 +1,13 @@
 <?php
 
+namespace Nekman\Collection\Tests;
+
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use Nekman\Collection\Collection;
 use PHPUnit\Framework\TestCase;
+use Traversable;
 
 final class FunctionsTest extends TestCase
 {
