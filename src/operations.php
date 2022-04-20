@@ -369,6 +369,8 @@ function iterable_to_array(iterable $it, bool $onlyValues = false): array
 {
     if ($onlyValues) {
         $it = iterable_values($it);
+    } else if (is_array($it)) {
+        return $it;
     }
 
     return iterator_to_array(
@@ -708,15 +710,18 @@ function iterable_dereference_key_value(iterable $it): iterable
 
 function iterable_reference_key_value(iterable $it): iterable
 {
-    return iterable_map(
-        $it,
-        fn($value, $key) => [$key, $value]
-    );
+    foreach ($it as $key => $value) {
+        yield [$key, $value];
+    }
 }
 
 function iterable_to_string(iterable $it): string
 {
-    return iterable_join($it);
+    return iterable_reduce(
+        $it,
+        fn(string $sum, string $value) => $sum . $value,
+        ""
+    );
 }
 
 function iterable_zip(iterable ...$its): iterable
