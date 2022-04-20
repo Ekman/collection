@@ -45,9 +45,19 @@ class Collection implements CollectionInterface
         return new self(iterable_repeat($initial, $nItems));
     }
 
+    public function __clone(): void
+    {
+        $this->it = clone $this->it;
+    }
+
     final public function __serialize(): array
     {
         return $this->toArray();
+    }
+
+    public function toArray(bool $onlyValues = false): array
+    {
+        return iterable_to_array($this->it, $onlyValues);
     }
 
     final public function __toString(): string
@@ -133,6 +143,11 @@ class Collection implements CollectionInterface
     public function dropWhile(callable $dropWhile): self
     {
         return new self(iterable_drop_while($this->it, $dropWhile));
+    }
+
+    public function duplicate(): self
+    {
+        return duplicate($this);
     }
 
     public function each(callable $each): self
@@ -263,11 +278,6 @@ class Collection implements CollectionInterface
         return $this->toArray();
     }
 
-    public function toArray(bool $onlyValues = false): array
-    {
-        return iterable_to_array($this->it, $onlyValues);
-    }
-
     public function keys(): self
     {
         return new self(iterable_keys($this->it));
@@ -352,6 +362,16 @@ class Collection implements CollectionInterface
     public function reverse(): self
     {
         return new self(iterable_reverse($this->it));
+    }
+
+    public function second(): mixed
+    {
+        return iterable_second($this->it);
+    }
+
+    public function shuffle(): self
+    {
+        return new self(iterable_shuffle($this->it));
     }
 
     public function sizeIs(int $size): bool
