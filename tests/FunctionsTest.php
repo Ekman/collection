@@ -3,9 +3,9 @@
 use Nekman\Collection\Collection;
 use PHPUnit\Framework\TestCase;
 
-class FunctionsTest extends TestCase
+final class FunctionsTest extends TestCase
 {
-    public function provideAppend()
+    public function provideAppend(): array
     {
         return [
             [
@@ -16,7 +16,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideAverage()
+    public function provideAverage(): array
     {
         return [
             "Test int" => [
@@ -30,7 +30,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideCombine()
+    public function provideCombine(): array
     {
         return [
             [
@@ -41,7 +41,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideConcat()
+    public function provideConcat(): array
     {
         return [
             [
@@ -54,7 +54,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideDereferenceKeyValue()
+    public function provideDereferenceKeyValue(): array
     {
         return [
             [
@@ -64,7 +64,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideFromAndCreate()
+    public function provideFromAndCreate(): array
     {
         return [
             "Test array" => [
@@ -90,7 +90,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideMap()
+    public function provideMap(): array
     {
         return [
             [
@@ -101,7 +101,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideReduce()
+    public function provideReduce(): array
     {
         return [
             "Test sum" => [
@@ -113,7 +113,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideReferenceKeyValue()
+    public function provideReferenceKeyValue(): array
     {
         return [
             [
@@ -123,7 +123,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideReverse()
+    public function provideReverse(): array
     {
         return [
             [
@@ -138,7 +138,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSize()
+    public function provideSize(): array
     {
         return [
             "Test array" => [
@@ -166,7 +166,7 @@ class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSort()
+    public function provideSort(): array
     {
         return [
             [
@@ -178,79 +178,79 @@ class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideAppend */
-    public function testAppend($input, $append, $expected)
+    public function testAppend($input, $append, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->append($append)->toArray(true));
     }
 
     /** @dataProvider provideAverage */
-    public function testAverage($input, $expected)
+    public function testAverage($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->average());
     }
 
     /** @dataProvider provideCombine */
-    public function testCombine($input, $combine, $expected)
+    public function testCombine($input, $combine, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->combine($combine)->toArray());
     }
 
     /** @dataProvider provideConcat */
-    public function testConcat($input, $concat, $expected)
+    public function testConcat($input, $concat, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->concat(...$concat)->toArray());
     }
 
     /** @dataProvider provideDereferenceKeyValue */
-    public function testDereferenceKeyValue($input, $expected)
+    public function testDereferenceKeyValue($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->dereferenceKeyValue()->toArray(true));
     }
 
     /** @dataProvider provideFromAndCreate */
-    public function testFrom($input, $expected)
+    public function testFrom($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->toArray(true));
     }
 
     /** @dataProvider provideMap */
-    public function testMap($input, $map, $expected)
+    public function testMap($input, $map, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->map($map)->toArray(true));
     }
 
     /** @dataProvider provideFromAndCreate */
-    public function testNew($input, $expected)
+    public function testNew($input, $expected): void
     {
         $this->assertEquals($expected, (new Collection($input))->toArray(true));
     }
 
     /** @dataProvider provideReduce */
-    public function testReduce($input, $reduce, $initial, $expected)
+    public function testReduce($input, $reduce, $initial, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->reduce($reduce, $initial));
     }
 
     /** @dataProvider provideReferenceKeyValue */
-    public function testReferenceKeyValue($input, $expected)
+    public function testReferenceKeyValue($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->referenceKeyValue()->toArray(true));
     }
 
     /** @dataProvider provideReverse */
-    public function testReverse($input, $expected)
+    public function testReverse($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->reverse()->toArray());
     }
 
     /** @dataProvider provideSize */
-    public function testSize($input, $expected)
+    public function testSize($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->size());
     }
 
     /** @dataProvider provideSort */
-    public function testSort($input, $sort, $expected)
+    public function testSort($input, $sort, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->sort($sort)->toArray(true));
     }
