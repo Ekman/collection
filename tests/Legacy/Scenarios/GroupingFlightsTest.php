@@ -60,10 +60,7 @@ final class GroupingFlightsTest extends TestCase
 
         $totalDelay = $flights
             ->reject(fn ($f) => $f["cancelled"])
-            ->reduce(
-                fn ($tmp, $f) => $tmp + $f["delay"],
-                0
-            );
+            ->reduce(fn ($tmp, $f) => $tmp + $f["delay"], 0);
 
         return [
             "numFlights" => $flights->size(),
