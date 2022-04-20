@@ -153,4 +153,8 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function splitAt(int $position): self;
 
     public function splitWith(callable $splitWith): self;
+
+    public function second(): mixed;
+
+    public function shuffle(): self;
 }

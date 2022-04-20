@@ -76,11 +76,11 @@ class FunctionsTest extends TestCase
                 [1, 2, 3, 4],
             ],
             "Test generator function" => [
-                fn() => yield from [1, 2],
+                fn () => yield from [1, 2],
                 [1, 2]
             ],
             "Test iterable function" => [
-                fn() => [3, 4, 5],
+                fn () => [3, 4, 5],
                 [3, 4, 5]
             ],
             "Test collection" => [
@@ -95,7 +95,7 @@ class FunctionsTest extends TestCase
         return [
             [
                 [1, 2, 3],
-                fn($number) => $number * 2,
+                fn ($number) => $number * 2,
                 [2, 4, 6]
             ]
         ];
@@ -106,7 +106,7 @@ class FunctionsTest extends TestCase
         return [
             "Test sum" => [
                 [6, 4, 5],
-                fn($sum, $number) => $sum + $number,
+                fn ($sum, $number) => $sum + $number,
                 0,
                 15,
             ]

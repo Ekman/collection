@@ -438,4 +438,14 @@ class Collection implements CollectionInterface
     {
         return new self(iterable_zip($this->it, ...$its));
     }
+
+    public function second(): mixed
+    {
+        return iterable_second($this->it);
+    }
+
+    public function shuffle(): self
+    {
+        return new self(iterable_shuffle($this->it));
+    }
 }

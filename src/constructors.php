@@ -10,7 +10,7 @@ function iterable_iterate(mixed $value, callable $iterable): iterable
         while (true) {
             yield $iterable($value);
         }
-    } catch (NoMoreItems) {
+    } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems) {
         // End loop
     }
 }

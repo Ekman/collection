@@ -7,7 +7,9 @@ use IteratorIterator;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Nekman\Collection\Exceptions\InvalidReturnValue;
 use Nekman\Collection\Exceptions\ItemNotFound;
+use ReflectionObject;
 use Traversable;
+use function shuffle;
 
 function iterable_append(iterable $it, mixed $value, mixed $key = null): iterable
 {
@@ -232,7 +234,7 @@ function iterable_except(iterable $it, iterable $keys): iterable
 
     return iterable_reject(
         $it,
-        fn($value, $key) => in_array($key, $keys)
+        fn ($value, $key) => in_array($key, $keys)
     );
 }
 
@@ -240,7 +242,7 @@ function iterable_reject(iterable $it, callable $reject): iterable
 {
     return iterable_filter(
         $it,
-        fn($value, $key) => !$reject($value, $key)
+        fn ($value, $key) => !$reject($value, $key)
     );
 }
 
@@ -360,7 +362,7 @@ function iterable_sum(iterable $it): float|int
 {
     return iterable_reduce(
         $it,
-        fn(float|int $sum, float|int $number) => $sum + $number,
+        fn (float|int $sum, float|int $number) => $sum + $number,
         0
     );
 }
@@ -369,7 +371,7 @@ function iterable_to_array(iterable $it, bool $onlyValues = false): array
 {
     if ($onlyValues) {
         $it = iterable_values($it);
-    } else if (is_array($it)) {
+    } elseif (is_array($it)) {
         return $it;
     }
 
@@ -425,7 +427,7 @@ function iterable_only(iterable $it, iterable $keys): iterable
 
     return iterable_filter(
         $it,
-        fn($value, $key) => in_array($key, $keys, true)
+        fn ($value, $key) => in_array($key, $keys, true)
     );
 }
 
@@ -473,9 +475,9 @@ function iterable_group_by_key(iterable $it, mixed $key): iterable
     return iterable_group_by(
         iterable_filter(
             $it,
-            fn($item) => iterable_has($item, $key),
+            fn ($item) => iterable_has($item, $key),
         ),
-        fn($value) => iterable_get($value, $key)
+        fn ($value) => iterable_get($value, $key)
     );
 }
 
@@ -678,7 +680,7 @@ function iterable_join(iterable $it, string $separator = ""): string
 {
     $joined = iterable_reduce(
         $it,
-        fn(string $joined, string $string) => $joined . $separator . $string,
+        fn (string $joined, string $string) => $joined . $separator . $string,
         ""
     );
 
@@ -695,7 +697,7 @@ function iterable_sort(iterable $it, callable $sort): iterable
 
     uasort(
         $array,
-        fn($a, $b) => $sort($a[1], $b[1], $a[0], $b[0])
+        fn ($a, $b) => $sort($a[1], $b[1], $a[0], $b[0])
     );
 
     return iterable_dereference_key_value($array);
@@ -719,7 +721,7 @@ function iterable_to_string(iterable $it): string
 {
     return iterable_reduce(
         $it,
-        fn(string $sum, string $value) => $sum . $value,
+        fn (string $sum, string $value) => $sum . $value,
         ""
     );
 }
@@ -771,7 +773,7 @@ function iterable_some(iterable $it, callable $some): bool
 
 function iterable_transpose(iterable ...$its): iterable
 {
-    if (iterable_some($its, fn($value) => !is_iterable($value))) {
+    if (iterable_some($its, fn ($value) => !is_iterable($value))) {
         throw new InvalidArgument('Can only transpose iterable of iterables.');
     }
 
@@ -830,4 +832,107 @@ function iterable_split_with(iterable $it, callable $splitWith): iterable
 {
     yield iterable_take_while($it, $splitWith);
     yield iterable_drop_while($it, $splitWith);
+}
+
+function dump(mixed $input, ?int $maxItemsPerCollection = null, ?int $maxDepth = null)
+{
+    if (is_scalar($input)) {
+        return $input;
+    }
+
+    if (is_array($input) || $input instanceof Traversable) {
+        if ($maxDepth === 0) {
+            return '^^^';
+        }
+
+        $normalizedProperties = [];
+        foreach ($input as $key => $value) {
+            if ($maxItemsPerCollection !== null && count($normalizedProperties) >= $maxItemsPerCollection) {
+                $normalizedProperties[] = '>>>';
+                break;
+            }
+
+            for ($affix = 0; true; $affix++) {
+                $betterKey = $affix ? "$key//$affix" : $key;
+                if (!array_key_exists($betterKey, $normalizedProperties)) {
+                    $normalizedProperties[$betterKey] = dump(
+                        $value,
+                        $maxItemsPerCollection,
+                        $maxDepth > 0 ? $maxDepth - 1 : null
+                    );
+
+                    break;
+                }
+            }
+        }
+
+        return $normalizedProperties;
+    }
+
+    if (is_object($input)) {
+        if ($maxDepth === 0) {
+            return '^^^';
+        }
+
+        $reflection = new ReflectionObject($input);
+        $normalizedProperties = [];
+        foreach ($reflection->getProperties() as $property) {
+            $property->setAccessible(true);
+            $normalizedProperties[$property->getName()] = $property->getValue($input);
+        }
+        return [get_class($input) => dump($normalizedProperties, null, $maxDepth > 0 ? $maxDepth - 1 : null)];
+    }
+
+    return gettype($input);
+}
+
+function print_dump(mixed $input, ?int $maxItemsPerCollection = null, ?int $maxDepth = null)
+{
+    var_export(dump($input, $maxItemsPerCollection, $maxDepth));
+    return $input;
+}
+
+function iterable_replace(iterable $it, iterable $replace): iterable
+{
+    foreach ($it as $key => $value) {
+        $newValue = iterable_get_or_default($replace, $value, $value);
+        yield $key => $newValue;
+    }
+}
+
+function iterable_replace_by_keys(iterable $it, iterable $replace): iterable
+{
+    foreach ($it as $key => $value) {
+        $newValue = iterable_get_or_default($replace, $key, $value);
+        yield $key => $newValue;
+    }
+}
+
+function iterable_second(iterable $it): mixed
+{
+    return iterable_get(iterable_values($it), 1);
+}
+
+function iterable_shuffle(iterable $it): iterable
+{
+    $buffer = iterable_to_array(
+        iterable_reference_key_value($it)
+    );
+
+    shuffle($buffer);
+
+    return iterable_dereference_key_value($buffer);
+}
+
+function duplicate(mixed $input): mixed
+{
+    if (is_array($input)) {
+        return iterable_to_array(
+            iterable_map($input, fn ($i) => duplicate($i))
+        );
+    } elseif (is_object($input)) {
+        return clone $input;
+    } else {
+        return $input;
+    }
 }
