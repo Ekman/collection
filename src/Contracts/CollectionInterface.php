@@ -157,4 +157,6 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function second(): mixed;
 
     public function shuffle(): self;
+
+    public function duplicate(): self;
 }
