@@ -22,7 +22,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
 
     public function map(callable $map): self;
 
-    public function reduce(callable $reduce, mixed $initial): mixed;
+    public function reduce(callable $reduce, mixed $initial, bool $convertToCollection = false): mixed;
 
     public function size(): int;
 

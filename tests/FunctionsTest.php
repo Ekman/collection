@@ -6,8 +6,11 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Nekman\Collection\Collection;
+use Nekman\Collection\Exceptions\InvalidArgument;
+use Nekman\Collection\Exceptions\NoMoreItems;
 use PHPUnit\Framework\TestCase;
 use Traversable;
+use function Nekman\Collection\iterable_to_array;
 
 final class FunctionsTest extends TestCase
 {
@@ -17,7 +20,14 @@ final class FunctionsTest extends TestCase
             [
                 [1, 3, 3, 2],
                 1,
+                null,
                 [1, 3, 3, 2, 1],
+            ],
+            [
+                [1, 3, 3, 2],
+                1,
+                'a',
+                [1, 3, 3, 2, 'a' => 1],
             ]
         ];
     }
@@ -70,6 +80,48 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideDistinct()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                [1, 3, 3 => 2],
+            ]
+        ];
+    }
+
+    public function provideFilter()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($item) => $item > 2,
+                [1 => 3, 2 => 3],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($item, $key) => $key > 2 && $item < 3,
+                [3 => 2],
+            ],
+        ];
+    }
+
+    public function provideFlatten()
+    {
+        return [
+            [
+                [1, [2, [3]]],
+                -1,
+                [1, 2, 3],
+            ],
+            [
+                [1, [2, [3]]],
+                1,
+                [1, 2, [3]],
+            ]
+        ];
+    }
+
     public function provideFromAndCreate(): array
     {
         return [
@@ -85,6 +137,14 @@ final class FunctionsTest extends TestCase
                 fn () => yield from [1, 2],
                 [1, 2]
             ],
+            "Test generator function, return iterable" => [
+                fn () => new ArrayIterator([1, 2]),
+                [1, 2]
+            ],
+            "Test generator function, return collection" => [
+                fn () => Collection::from([1, 2]),
+                [1, 2]
+            ],
             "Test iterable function" => [
                 fn () => [3, 4, 5],
                 [3, 4, 5]
@@ -93,6 +153,16 @@ final class FunctionsTest extends TestCase
                 Collection::from(["foo", "bar"]),
                 ["foo", "bar"],
             ]
+        ];
+    }
+
+    public function provideFromAndCreate_fail(): array
+    {
+        return [
+            [
+                1,
+                InvalidArgument::class,
+            ],
         ];
     }
 
@@ -114,7 +184,46 @@ final class FunctionsTest extends TestCase
                 [6, 4, 5],
                 fn ($sum, $number) => $sum + $number,
                 0,
+                false,
                 15,
+            ],
+            [
+                [1, 3, 3, 2],
+                function ($temp, $item) {
+                    $temp[] = $item;
+
+                    return $temp;
+                },
+                ['a' => [1]],
+                true,
+                [[1], 1, 3, 3, 2],
+            ],
+            [
+                [1, 3, 3, 2],
+                function ($temp, $item) {
+                    return $temp + $item;
+                },
+                0,
+                false,
+                9
+            ],
+            [
+                [1, 3, 3, 2],
+                function ($temp, $item, $key) {
+                    return $temp + $key + $item;
+                },
+                0,
+                false,
+                15
+            ],
+            [
+                [1, 3, 3, 2],
+                function (Collection $temp, $item) {
+                    return $temp->append($item);
+                },
+                new Collection([]),
+                false,
+                [1, 3, 3, 2],
             ]
         ];
     }
@@ -177,16 +286,53 @@ final class FunctionsTest extends TestCase
         return [
             [
                 [1, 3, 2],
-                "\Nekman\Collection\compare",
+                "\\Nekman\\Collection\\compare",
                 [1, 2, 3],
+            ],
+            [
+                [3, 1, 2],
+                fn ($a, $b) => $a > $b,
+                [1 => 1, 2 => 2, 0 => 3],
+            ],
+            [
+                [3, 1, 2],
+                function ($v1, $v2, $k1, $k2) {
+                    return $k1 < $k2 || $v1 == $v2;
+                },
+                [2 => 2, 1 => 1, 0 => 3],
+            ]
+        ];
+    }
+
+    public function provideToArray()
+    {
+        return [
+            [
+                function () {
+                    yield 'no key';
+                    yield 'with key' => 'this value is overwritten by the same key';
+                    yield 'nested' => [
+                        'y' => 'z',
+                    ];
+                    yield 'iterator is not converted' => new ArrayIterator(["foo"]);
+                    yield 'with key' => 'x';
+                },
+                [
+                    'no key',
+                    'with key' => 'x',
+                    'nested' => [
+                        'y' => 'z',
+                    ],
+                    'iterator is not converted' => new ArrayIterator(["foo"]),
+                ],
             ]
         ];
     }
 
     /** @dataProvider provideAppend */
-    public function testAppend($input, $append, $expected): void
+    public function testAppend($input, $append, $key, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->append($append)->toArray(true));
+        $this->assertEquals($expected, Collection::from($input)->append($append, $key)->toArray(true));
     }
 
     /** @dataProvider provideAverage */
@@ -213,10 +359,57 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, Collection::from($input)->dereferenceKeyValue()->toArray(true));
     }
 
+    /** @dataProvider provideDistinct */
+    public function testDistinct($input, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->distinct()->toArray());
+    }
+
+    /** @dataProvider provideFilter */
+    public function testFilter($input, $filter, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->filter($filter)->toArray());
+    }
+
+    public function testFilter_falsy_values()
+    {
+        $input = [false, null, '', 0, 0.0, []];
+        $this->assertTrue(Collection::from($input)->filter()->isEmpty());
+    }
+
+    /** @dataProvider provideFlatten */
+    public function testFlatten($input, $depth, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->flatten($depth)->toArray());
+    }
+
     /** @dataProvider provideFromAndCreate */
     public function testFrom($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->toArray(true));
+    }
+
+    /** @dataProvider provideFromAndCreate_fail */
+    public function testFrom_fail($input, $expected): void
+    {
+        $this->expectException($expected);
+        Collection::from($input)->toArray(true);
+    }
+
+    public function testIterate_infinite(): void
+    {
+        $this->assertEquals(
+            [1, 2],
+            Collection::iterate(1, fn ($i) => $i + 1)->take(2)->toArray()
+        );
+    }
+
+    public function testIterate_not_infinite(): void
+    {
+        $this->assertEquals(
+            [1, 2, 3, 4],
+            Collection::iterate(1, fn ($i) => $i > 3 ? throw new NoMoreItems : $i + 1)->toArray()
+        );
     }
 
     /** @dataProvider provideMap */
@@ -231,16 +424,37 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, (new Collection($input))->toArray(true));
     }
 
-    /** @dataProvider provideReduce */
-    public function testReduce($input, $reduce, $initial, $expected): void
+    /** @dataProvider provideFromAndCreate_fail */
+    public function testNew_fail($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->reduce($reduce, $initial));
+        $this->expectException($expected);
+        (new Collection($input))->toArray(true);
+    }
+
+    /** @dataProvider provideReduce */
+    public function testReduce($input, $reduce, $initial, $convertToCollection, $expected): void
+    {
+        $result = Collection::from($input)->reduce($reduce, $initial, $convertToCollection);
+
+        if (is_iterable($result)) {
+            $result = iterable_to_array($result);
+        }
+
+        $this->assertEquals($expected, $result);
     }
 
     /** @dataProvider provideReferenceKeyValue */
     public function testReferenceKeyValue($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->referenceKeyValue()->toArray(true));
+    }
+
+    public function testRepeat_infinite(): void
+    {
+        $this->assertEquals(
+            [1, 1],
+            Collection::repeat(1)->take(2)->toArray()
+        );
     }
 
     /** @dataProvider provideReverse */
@@ -259,5 +473,59 @@ final class FunctionsTest extends TestCase
     public function testSort($input, $sort, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->sort($sort)->toArray(true));
+    }
+
+    /** @dataProvider provideToArray */
+    public function testToArray($input, $expected): void
+    {
+        $this->assertEquals($expected, Collection::from($input)->toArray());
+    }
+
+    /** @dataProvider provideFrequencies */
+    public function testFrequencies($input, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->frequencies()->toArray());
+    }
+
+    public function provideFrequencies()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                [1 => 1, 3 => 2, 2 => 1],
+            ]
+        ];
+    }
+
+    /** @dataProvider provideEvery */
+    public function testEvery($input, $every, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->every($every));
+    }
+
+    public function provideEvery()
+    {
+        return [
+           [
+               [1, 3, 3, 2],
+                fn ($v) => $v > 0,
+                true,
+           ],
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v > 1,
+                false,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $v > 0 && $k >= 0,
+                true,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $v > 0 && $k > 0,
+                false,
+            ],
+        ];
     }
 }

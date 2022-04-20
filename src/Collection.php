@@ -334,9 +334,10 @@ class Collection implements CollectionInterface
         return new self(iterable_realize($this->it));
     }
 
-    public function reduce(callable $reduce, mixed $initial): mixed
+    public function reduce(callable $reduce, mixed $initial, bool $convertToCollection = false): mixed
     {
-        return iterable_reduce($this->it, $reduce, $initial);
+        $reduce = iterable_reduce($this->it, $reduce, $initial);
+        return $convertToCollection && is_iterable($reduce) ? new self($reduce) : $reduce;
     }
 
     public function reduceRight(callable $reduceRight, mixed $initial): mixed
