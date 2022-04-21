@@ -20,10 +20,10 @@ function iterable_iterate(mixed $value, callable $iterate): iterable
     }
 }
 
-function iterable_repeat(mixed $initial, int $nItems = -1): iterable
+function iterable_repeat(mixed $startValue, int $nItems = -1): iterable
 {
     for ($i = 0; $nItems === -1 || $i < $nItems; $i++) {
-        yield $initial;
+        yield $startValue;
     }
 }
 
