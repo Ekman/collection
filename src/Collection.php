@@ -10,7 +10,7 @@ class Collection implements CollectionInterface
 {
     private readonly iterable $it;
 
-    public function __construct(iterable|callable $it)
+    public function __construct(iterable|callable $it = [])
     {
         $it = match (true) {
             $it instanceof self => $it->it,
@@ -25,7 +25,7 @@ class Collection implements CollectionInterface
         $this->it = $it;
     }
 
-    public static function from(iterable|callable $it): self
+    public static function from(iterable|callable $it = []): self
     {
         return $it instanceof self ? $it : new self($it);
     }
@@ -110,6 +110,11 @@ class Collection implements CollectionInterface
         return iterable_size($this->it);
     }
 
+    public function countBy(callable $countBy): CollectionInterface
+    {
+        return new self(iterable_count_by($this->it, $countBy));
+    }
+
     public function cycle(): self
     {
         return new self(iterable_cycle($this->it));
@@ -143,6 +148,11 @@ class Collection implements CollectionInterface
     public function dropWhile(callable $dropWhile): self
     {
         return new self(iterable_drop_while($this->it, $dropWhile));
+    }
+
+    public function dump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): array
+    {
+        return dump($this->it, $maxItemsPerCollection, $maxDepth);
     }
 
     public function duplicate(): self
@@ -329,14 +339,20 @@ class Collection implements CollectionInterface
         return new self(iterable_prepend($this->it, $value, $key));
     }
 
+    public function printDump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): CollectionInterface
+    {
+        return print_dump($this->it, $maxItemsPerCollection, $maxDepth);
+    }
+
     public function realize(): self
     {
         return new self(iterable_realize($this->it));
     }
 
-    public function reduce(callable $reduce, mixed $initial): mixed
+    public function reduce(callable $reduce, mixed $initial, bool $convertToCollection = false): mixed
     {
-        return iterable_reduce($this->it, $reduce, $initial);
+        $reduce = iterable_reduce($this->it, $reduce, $initial);
+        return $convertToCollection && is_iterable($reduce) ? new self($reduce) : $reduce;
     }
 
     public function reduceRight(callable $reduceRight, mixed $initial): mixed
@@ -357,6 +373,16 @@ class Collection implements CollectionInterface
     public function reject(callable $reject): self
     {
         return new self(iterable_reject($this->it, $reject));
+    }
+
+    public function replace(iterable $replace): CollectionInterface
+    {
+        return new self(iterable_replace($this->it, $replace));
+    }
+
+    public function replaceByKeys(iterable $replace): self
+    {
+        return new self(iterable_replace_by_keys($this->it, $replace));
     }
 
     public function reverse(): self

@@ -4,14 +4,19 @@ namespace Nekman\Collection;
 
 use Nekman\Collection\Exceptions\NoMoreItems;
 
-function iterable_iterate(mixed $value, callable $iterable): iterable
+function iterable_iterate(mixed $value, callable $iterate): iterable
 {
-    try {
-        while (true) {
-            yield $iterable($value);
+    $value = duplicate($value);
+
+    yield $value;
+
+    while (true) {
+        try {
+            $value = $iterate($value);
+            yield $value;
+        } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems) {
+            break;
         }
-    } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems) {
-        // End loop
     }
 }
 

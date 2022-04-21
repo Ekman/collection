@@ -22,7 +22,9 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
 
     public function map(callable $map): self;
 
-    public function reduce(callable $reduce, mixed $initial): mixed;
+    public function reduce(callable $reduce, mixed $initial, bool $convertToCollection = false): mixed;
+
+    public function countBy(callable $countBy): self;
 
     public function size(): int;
 
@@ -159,4 +161,12 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function shuffle(): self;
 
     public function duplicate(): self;
+
+    public function dump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): array;
+
+    public function printDump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): self;
+
+    public function replaceByKeys(iterable $replace): self;
+
+    public function replace(iterable $replace): self;
 }
