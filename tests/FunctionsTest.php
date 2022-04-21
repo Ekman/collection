@@ -7,9 +7,12 @@ use Countable;
 use IteratorAggregate;
 use Nekman\Collection\Collection;
 use Nekman\Collection\Exceptions\InvalidArgument;
+use Nekman\Collection\Exceptions\ItemNotFound;
 use Nekman\Collection\Exceptions\NoMoreItems;
+use Nekman\Collection\Tests\Helpers\Car;
 use PHPUnit\Framework\TestCase;
 use Traversable;
+use function Nekman\Collection\iterable_concat;
 use function Nekman\Collection\iterable_to_array;
 
 final class FunctionsTest extends TestCase
@@ -132,6 +135,159 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideDropLast()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                1,
+                [1, 3, 3],
+            ],
+            [
+                [1, 3, 3, 2],
+                2,
+                [1, 3],
+            ],
+        ];
+    }
+
+    public function provideDropWhile()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v < 3,
+                [1 => 3, 2 => 3, 3 => 2],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $k < 2 && $v < 3,
+                [1 => 3, 2 => 3, 3 => 2],
+            ],
+        ];
+    }
+
+    public function provideDump()
+    {
+        return [
+            [
+                [
+                    [
+                        [1, [2], 3],
+                        ['a' => 'b'],
+                        new ArrayIterator([1, 2, 3]),
+                    ],
+                    [1, 2, 3],
+                    new ArrayIterator(['a', 'b', 'c']),
+                    true,
+                    new Car('sedan', 5),
+                    iterable_concat([1], [1]),
+                ],
+                null,
+                null,
+                [
+                    [
+                        [1, [2], 3],
+                        ['a' => 'b'],
+                        [1, 2, 3],
+                    ],
+                    [1, 2, 3],
+                    ['a', 'b', 'c'],
+                    true,
+                    [
+                        'DusanKasan\Knapsack\Tests\Helpers\Car' => [
+                            'numberOfSeats' => 5,
+                        ],
+
+                    ],
+                    [1, '0//1' => 1],
+                ]
+            ],
+            [
+                [
+                    [
+                        [1, [2], 3],
+                        ['a' => 'b'],
+                        new ArrayIterator([1, 2, 3]),
+                    ],
+                    [1, 2, 3],
+                    new ArrayIterator(['a', 'b', 'c']),
+                    true,
+                    new Car('sedan', 5),
+                    iterable_concat([1], [1]),
+                ],
+                2,
+                null,
+                [
+                    [
+                        [1, [2], '>>>'],
+                        ['a' => 'b'],
+                        '>>>',
+                    ],
+                    [1, 2, '>>>'],
+                    '>>>',
+                ]
+            ],
+            [
+                [
+                    [
+                        [1, [2], 3],
+                        ['a' => 'b'],
+                        new ArrayIterator([1, 2, 3]),
+                    ],
+                    [1, 2, 3],
+                    new ArrayIterator(['a', 'b', 'c']),
+                    true,
+                    new Car('sedan', 5),
+                    iterable_concat([1], [1]),
+                ],
+                null,
+                3,
+                [
+                    [
+                        [1, '^^^', 3],
+                        ['a' => 'b'],
+                        [1, 2, 3],
+                    ],
+                    [1, 2, 3],
+                    ['a', 'b', 'c'],
+                    true,
+                    [
+                        'DusanKasan\Knapsack\Tests\Helpers\Car' => [
+                            'numberOfSeats' => 5,
+                        ],
+                    ],
+                    [1, '0//1' => 1],
+                ]
+            ],
+            [
+                [
+                    [
+                        [1, [2], 3],
+                        ['a' => 'b'],
+                        new ArrayIterator([1, 2, 3]),
+                    ],
+                    [1, 2, 3],
+                    new ArrayIterator(['a', 'b', 'c']),
+                    true,
+                    new Car('sedan', 5),
+                    iterable_concat([1], [1]),
+                ],
+                2,
+                3,
+                [
+                    [
+                        [1, '^^^', '>>>'],
+                        ['a' => 'b'],
+                        '>>>',
+                    ],
+                    [1, 2, '>>>'],
+                    '>>>',
+                ]
+            ],
+        ];
+    }
+
     public function provideEvery()
     {
         return [
@@ -158,6 +314,210 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideExcept()
+    {
+        return [
+            [
+                ['a' => 1, 'b' => 2],
+                ["a", "b"],
+                [],
+            ],
+        ];
+    }
+
+    public function provideExtract()
+    {
+        return [
+            [
+                [
+                    [
+                        'a' => [
+                            'b' => 1,
+                        ],
+                    ],
+                    [
+                        'a' => [
+                            'b' => 2,
+                        ],
+                    ],
+                    [
+                        '*' => [
+                            'b' => 3,
+                        ],
+                    ],
+                    [
+                        '.' => [
+                            'b' => 4,
+                        ],
+                        'c' => [
+                            'b' => 5,
+                        ],
+                        [
+                            'a',
+                        ],
+                    ],
+                ],
+                '',
+                [
+                    [
+                        'a' => [
+                            'b' => 1,
+                        ],
+                    ],
+                    [
+                        'a' => [
+                            'b' => 2,
+                        ],
+                    ],
+                    [
+                        '*' => [
+                            'b' => 3,
+                        ],
+                    ],
+                    [
+                        '.' => [
+                            'b' => 4,
+                        ],
+                        'c' => [
+                            'b' => 5,
+                        ],
+                        [
+                            'a',
+                        ],
+                    ],
+                ],
+            ],
+            [
+                [
+                    [
+                        'a' => [
+                            'b' => 1,
+                        ],
+                    ],
+                    [
+                        'a' => [
+                            'b' => 2,
+                        ],
+                    ],
+                    [
+                        '*' => [
+                            'b' => 3,
+                        ],
+                    ],
+                    [
+                        '.' => [
+                            'b' => 4,
+                        ],
+                        'c' => [
+                            'b' => 5,
+                        ],
+                        [
+                            'a',
+                        ],
+                    ],
+                ],
+                "a.b",
+                [1, 2],
+            ],
+            [
+                [
+                    [
+                        'a' => [
+                            'b' => 1,
+                        ],
+                    ],
+                    [
+                        'a' => [
+                            'b' => 2,
+                        ],
+                    ],
+                    [
+                        '*' => [
+                            'b' => 3,
+                        ],
+                    ],
+                    [
+                        '.' => [
+                            'b' => 4,
+                        ],
+                        'c' => [
+                            'b' => 5,
+                        ],
+                        [
+                            'a',
+                        ],
+                    ],
+                ],
+                "*.b",
+                [1, 2, 3, 4, 5]
+            ],
+            [
+                [
+                    [
+                        'a' => [
+                            'b' => 1,
+                        ],
+                    ],
+                    [
+                        'a' => [
+                            'b' => 2,
+                        ],
+                    ],
+                    [
+                        '*' => [
+                            'b' => 3,
+                        ],
+                    ],
+                    [
+                        '.' => [
+                            'b' => 4,
+                        ],
+                        'c' => [
+                            'b' => 5,
+                        ],
+                        [
+                            'a',
+                        ],
+                    ],
+                ],
+                '\*.b',
+                [3]
+            ],
+            [
+                [
+                    [
+                        'a' => [
+                            'b' => 1,
+                        ],
+                    ],
+                    [
+                        'a' => [
+                            'b' => 2,
+                        ],
+                    ],
+                    [
+                        '*' => [
+                            'b' => 3,
+                        ],
+                    ],
+                    [
+                        '.' => [
+                            'b' => 4,
+                        ],
+                        'c' => [
+                            'b' => 5,
+                        ],
+                        [
+                            'a',
+                        ],
+                    ],
+                ],
+                '\..b',
+                [4]
+            ]
+        ];
+    }
+
     public function provideFilter()
     {
         return [
@@ -170,6 +530,52 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 fn ($item, $key) => $key > 2 && $item < 3,
                 [3 => 2],
+            ],
+        ];
+    }
+
+    public function provideFind()
+    {
+        return [
+            [
+                [1, 3, 3, 2, [5]],
+                fn ($v) => $v < 3,
+                null,
+                1,
+            ],
+            [
+                [1, 3, 3, 2, [5]],
+                fn ($v) => $v < 0,
+                null,
+                null,
+            ],
+            [
+                [1, 3, 3, 2, [5]],
+                fn ($v) => $v < 0,
+                null,
+                null,
+            ],
+            [
+                [1, 3, 3, 2, [5]],
+                fn ($v) => $v < 0,
+                "not found",
+                "not found",
+            ],
+        ];
+    }
+
+    public function provideFirst()
+    {
+        return [
+            [
+                [1, [2], 3],
+                false,
+                1,
+            ],
+            [
+                [1, [2], 3],
+                true,
+                [1],
             ],
         ];
     }
@@ -187,6 +593,16 @@ final class FunctionsTest extends TestCase
                 1,
                 [1, 2, [3]],
             ]
+        ];
+    }
+
+    public function provideFlip()
+    {
+        return [
+            [
+                ['a' => 1, 'b' => 2],
+                [1 => 'a', 2 => 'b'],
+            ],
         ];
     }
 
@@ -244,6 +660,82 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideGet()
+    {
+        return [
+            [
+                [1, [2], 3],
+                0,
+                false,
+                1,
+            ],
+            [
+                [1, [2], 3],
+                1,
+                true,
+                [[2]],
+            ],
+            [
+                [1, [2], 3],
+                1,
+                false,
+                [2],
+            ],
+        ];
+    }
+
+    public function provideGetOrDefault()
+    {
+        return [
+            [
+                [1, [2], 3],
+                0,
+                null,
+                false,
+                1,
+            ],
+            [
+                [1, [2], 3],
+                1,
+                null,
+                true,
+                [[2]],
+            ],
+            [
+                [1, [2], 3],
+                1,
+                null,
+                false,
+                [2],
+            ],
+            [
+                [1, [2], 3],
+                5,
+                null,
+                false,
+                null,
+            ],
+            [
+                [1, [2], 3],
+                5,
+                "not found",
+                false,
+                "not found",
+            ],
+        ];
+    }
+
+    public function provideGet_fail()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                5,
+                ItemNotFound::class,
+            ],
+        ];
+    }
+
     public function provideHas()
     {
         return [
@@ -280,6 +772,32 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideKeys()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                [0, 1, 2, 3],
+            ],
+        ];
+    }
+
+    public function provideLast()
+    {
+        return [
+            [
+                [1, [2], 3],
+                false,
+                3,
+            ],
+            [
+                [1, [2], 3],
+                true,
+                [3],
+            ],
+        ];
+    }
+
     public function provideMap(): array
     {
         return [
@@ -288,6 +806,46 @@ final class FunctionsTest extends TestCase
                 fn ($number) => $number * 2,
                 [2, 4, 6]
             ]
+        ];
+    }
+
+    public function provideMax()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                3,
+            ],
+        ];
+    }
+
+    public function provideMin()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                1,
+            ],
+        ];
+    }
+
+    public function provideRange()
+    {
+        return [
+            [
+                5,
+                6,
+                null,
+                4,
+                [5, 6]
+            ],
+            [
+                5,
+                null,
+                null,
+                2,
+                [5, 6]
+            ],
         ];
     }
 
@@ -342,12 +900,50 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideReductions()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($tmp, $i) => $tmp + $i,
+                0,
+                [0, 1, 4, 7, 9],
+            ],
+        ];
+    }
+
     public function provideReferenceKeyValue(): array
     {
         return [
             [
                 ["a", "b"],
                 [[0, "a"], [1, "b"]],
+            ]
+        ];
+    }
+
+    public function provideRepeat()
+    {
+        return [
+            [
+                1,
+                1,
+                [1],
+            ],
+        ];
+    }
+
+    public function provideRepeat_infinite()
+    {
+        return [
+            [
+                1,
+                2,
+                [1, 1]
+            ],
+            [
+                1, 3,
+                [1, 1, 1]
             ]
         ];
     }
@@ -364,6 +960,16 @@ final class FunctionsTest extends TestCase
                     0 => 1,
                 ]
             ]
+        ];
+    }
+
+    public function provideSecond()
+    {
+        return [
+            [
+                [1, 2],
+                2,
+            ],
         ];
     }
 
@@ -615,37 +1221,91 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideDistinct */
-    public function testDistinct($input, $expected)
+    public function testDistinct($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->distinct()->toArray());
     }
 
+    /** @dataProvider provideDropLast */
+    public function testDropLast($input, $dropLast, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->dropLast($dropLast)->toArray());
+    }
+
+    /** @dataProvider provideDropWhile */
+    public function testDropWhile($input, $dropWhile, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->dropWhile($dropWhile)->toArray());
+    }
+
+    /** @dataProvider provideDump */
+    public function testDump($input, $maxItemsPerCollection, $maxDepth, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->dump($maxItemsPerCollection, $maxDepth));
+    }
+
     /** @dataProvider provideEvery */
-    public function testEvery($input, $every, $expected)
+    public function testEvery($input, $every, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->every($every));
     }
 
+    /** @dataProvider provideExcept */
+    public function testExcept($input, $except, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->except($except)->toArray());
+    }
+
+    /** @dataProvider provideExtract */
+    public function testExtract($input, $extract, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->extract($extract)->toArray());
+    }
+
     /** @dataProvider provideFilter */
-    public function testFilter($input, $filter, $expected)
+    public function testFilter($input, $filter, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->filter($filter)->toArray());
     }
 
-    public function testFilter_falsy_values()
+    public function testFilter_falsy_values(): void
     {
         $input = [false, null, '', 0, 0.0, []];
         $this->assertTrue(Collection::from($input)->filter()->isEmpty());
     }
 
+    /** @dataProvider provideFind */
+    public function testFind($input, $find, $default, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->find($find, $default));
+    }
+
+    /** @dataProvider provideFirst */
+    public function testFirst($input, $convertToIterable, $expect): void
+    {
+        $result = Collection::from($input)->first($convertToIterable);
+
+        if (is_iterable($result)) {
+            $result = iterable_to_array($result);
+        }
+
+        $this->assertEquals($expect, $result);
+    }
+
     /** @dataProvider provideFlatten */
-    public function testFlatten($input, $depth, $expected)
+    public function testFlatten($input, $depth, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->flatten($depth)->toArray());
     }
 
+    /** @dataProvider provideFlip */
+    public function testFlip($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->flip()->toArray());
+    }
+
     /** @dataProvider provideFrequencies */
-    public function testFrequencies($input, $expected)
+    public function testFrequencies($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->frequencies()->toArray());
     }
@@ -661,6 +1321,37 @@ final class FunctionsTest extends TestCase
     {
         $this->expectException($expected);
         Collection::from($input)->toArray(true);
+    }
+
+    /** @dataProvider provideGet */
+    public function testGet($input, $key, $convertToIterable, $expect): void
+    {
+        $result = Collection::from($input)->get($key, $convertToIterable);
+
+        if (is_iterable($result)) {
+            $result = iterable_to_array($result);
+        }
+
+        $this->assertEquals($expect, $result);
+    }
+
+    /** @dataProvider provideGetOrDefault */
+    public function testGetOrDefault($input, $key, $default, $convertToIterable, $expect): void
+    {
+        $result = Collection::from($input)->getOrDefault($key, $default, $convertToIterable);
+
+        if (is_iterable($result)) {
+            $result = iterable_to_array($result);
+        }
+
+        $this->assertEquals($expect, $result);
+    }
+
+    /** @dataProvider provideGet_fail */
+    public function testGet_fail($input, $key, $expect): void
+    {
+        $this->expectException($expect);
+        Collection::from($input)->get($key);
     }
 
     /** @dataProvider provideHas */
@@ -697,10 +1388,40 @@ final class FunctionsTest extends TestCase
         );
     }
 
+    /** @dataProvider provideKeys */
+    public function testKeys($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->keys()->toArray());
+    }
+
+    /** @dataProvider provideLast */
+    public function testLast($input, $convertToIterable, $expect): void
+    {
+        $result = Collection::from($input)->last($convertToIterable);
+
+        if (is_iterable($result)) {
+            $result = iterable_to_array($result);
+        }
+
+        $this->assertEquals($expect, $result);
+    }
+
     /** @dataProvider provideMap */
     public function testMap($input, $map, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->map($map)->toArray(true));
+    }
+
+    /** @dataProvider provideMax */
+    public function testMax($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->max());
+    }
+
+    /** @dataProvider provideMin */
+    public function testMin($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->min());
     }
 
     /** @dataProvider provideFromAndCreate */
@@ -716,6 +1437,12 @@ final class FunctionsTest extends TestCase
         (new Collection($input))->toArray(true);
     }
 
+    /** @dataProvider provideRange */
+    public function testRange($input, $start, $end, $step, $take, $expect): void
+    {
+        $this->assertEquals($expect, Collection::range($start, $end, $step)->take($take)->toArray());
+    }
+
     /** @dataProvider provideReduce */
     public function testReduce($input, $reduce, $initial, $convertToCollection, $expected): void
     {
@@ -728,17 +1455,30 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /** @dataProvider provideReductions */
+    public function testReductions($input, $reductions, $initial, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->reductions($reductions, $initial)->toArray());
+    }
+
     /** @dataProvider provideReferenceKeyValue */
     public function testReferenceKeyValue($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->referenceKeyValue()->toArray(true));
     }
 
-    public function testRepeat_infinite(): void
+    /** @dataProvider provideRepeat */
+    public function testRepeat($initial, $nItems, $expect): void
+    {
+        $this->assertEquals($expect, Collection::repeat($initial, $nItems)->toArray());
+    }
+
+    /** @dataProvider provideRepeat_infinite */
+    public function testRepeat_infinite($initial, $nItems, $expected): void
     {
         $this->assertEquals(
-            [1, 1],
-            Collection::repeat(1)->take(2)->toArray()
+            $expected,
+            Collection::repeat($initial)->take($nItems)->toArray()
         );
     }
 
@@ -746,6 +1486,12 @@ final class FunctionsTest extends TestCase
     public function testReverse($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->reverse()->toArray());
+    }
+
+    /** @dataProvider provideSecond */
+    public function testSecond($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->second());
     }
 
     /** @dataProvider provideSize */

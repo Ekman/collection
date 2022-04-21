@@ -464,4 +464,9 @@ class Collection implements CollectionInterface
     {
         return new self(iterable_count_by($this->it, $countBy));
     }
+
+    public function dump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): array
+    {
+        return dump($this->it, $maxItemsPerCollection, $maxDepth);
+    }
 }
