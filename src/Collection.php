@@ -326,7 +326,9 @@ class Collection implements CollectionInterface
 
     public function partition(int $nItems): self
     {
-        return new self(iterable_partition($this->it, $nItems));
+        $partition = iterable_partition($this->it, $nItems);
+        $partition = iterable_map($partition, fn ($it) => is_iterable($it) ? new self($it) : $it);
+        return new self($partition);
     }
 
     public function partitionBy(callable $partitionBy): self
