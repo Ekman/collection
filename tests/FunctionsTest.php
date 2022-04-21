@@ -30,9 +30,9 @@ final class FunctionsTest extends TestCase
             [
                 [1, 3, 3, 2],
                 1,
-                'a',
-                [1, 3, 3, 2, 'a' => 1],
-            ]
+                "a",
+                [1, 3, 3, 2, "a" => 1],
+            ],
         ];
     }
 
@@ -41,16 +41,16 @@ final class FunctionsTest extends TestCase
         return [
             "Test int" => [
                 [1, 2, 3],
-                2
+                2,
             ],
             "Test float" => [
                 [6.4, 3.2, 8.9],
-                6.166666666666667
+                6.166666666666667,
             ],
             [
                 [],
                 0,
-            ]
+            ],
         ];
     }
 
@@ -60,7 +60,7 @@ final class FunctionsTest extends TestCase
             [
                 ["a", "b"],
                 [1, 2],
-                ["a" => 1, "b" => 2]
+                ["a" => 1, "b" => 2],
             ],
             [
                 ["a", "b"],
@@ -70,8 +70,8 @@ final class FunctionsTest extends TestCase
             [
                 ["a", "b"],
                 [1, 2, 3],
-                ["a" => 1, "b" => 2]
-            ]
+                ["a" => 1, "b" => 2],
+            ],
         ];
     }
 
@@ -81,14 +81,14 @@ final class FunctionsTest extends TestCase
             [
                 [1, 3, 3, 2],
                 [
-                    [4, 5]
+                    [4, 5],
                 ],
-                [4, 5, 3, 2]
-            ]
+                [4, 5, 3, 2],
+            ],
         ];
     }
 
-    public function provideContains()
+    public function provideContains(): array
     {
         return [
             [
@@ -100,11 +100,11 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 true,
                 false,
-            ]
+            ],
         ];
     }
 
-    public function provideCountBy()
+    public function provideCountBy(): array
     {
         return [
             [
@@ -114,13 +114,13 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [1, 3, 3, 2],
-                fn ($v, $k) => ($k + $v) % 2 == 0 ? 'even' : 'odd',
+                fn ($v, $k) => ($k + $v) % 2 == 0 ? "even" : "odd",
                 ["odd" => 3, "even" => 1],
             ],
         ];
     }
 
-    public function provideCycle()
+    public function provideCycle(): array
     {
         return [
             [
@@ -137,11 +137,11 @@ final class FunctionsTest extends TestCase
             [
                 [[0, "a"], [1, "b"]],
                 ["a", "b"],
-            ]
+            ],
         ];
     }
 
-    public function provideDiff()
+    public function provideDiff(): array
     {
         return [
             [
@@ -162,17 +162,17 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideDistinct()
+    public function provideDistinct(): array
     {
         return [
             [
                 [1, 3, 3, 2],
                 [1, 3, 3 => 2],
-            ]
+            ],
         ];
     }
 
-    public function provideDrop()
+    public function provideDrop(): array
     {
         return [
             [
@@ -183,7 +183,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideDropLast()
+    public function provideDropLast(): array
     {
         return [
             [
@@ -199,7 +199,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideDropWhile()
+    public function provideDropWhile(): array
     {
         return [
             [
@@ -215,20 +215,20 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideDump()
+    public function provideDump(): array
     {
         return [
             [
                 [
                     [
                         [1, [2], 3],
-                        ['a' => 'b'],
+                        ["a" => "b"],
                         new ArrayIterator([1, 2, 3]),
                     ],
                     [1, 2, 3],
-                    new ArrayIterator(['a', 'b', 'c']),
+                    new ArrayIterator(["a", "b", "c"]),
                     true,
-                    new Car('sedan', 5),
+                    new Car("sedan", 5),
                     iterable_concat([1], [1]),
                 ],
                 null,
@@ -236,107 +236,107 @@ final class FunctionsTest extends TestCase
                 [
                     [
                         [1, [2], 3],
-                        ['a' => 'b'],
+                        ["a" => "b"],
                         [1, 2, 3],
                     ],
                     [1, 2, 3],
-                    ['a', 'b', 'c'],
+                    ["a", "b", "c"],
                     true,
                     [
-                        'DusanKasan\Knapsack\Tests\Helpers\Car' => [
-                            'numberOfSeats' => 5,
+                        "Nekman\\Collection\\Tests\\Helpers\\Car" => [
+                            "numberOfSeats" => 5,
                         ],
 
                     ],
-                    [1, '0//1' => 1],
-                ]
+                    [1, "0//1" => 1],
+                ],
             ],
             [
                 [
                     [
                         [1, [2], 3],
-                        ['a' => 'b'],
+                        ["a" => "b"],
                         new ArrayIterator([1, 2, 3]),
                     ],
                     [1, 2, 3],
-                    new ArrayIterator(['a', 'b', 'c']),
+                    new ArrayIterator(["a", "b", "c"]),
                     true,
-                    new Car('sedan', 5),
+                    new Car("sedan", 5),
                     iterable_concat([1], [1]),
                 ],
                 2,
                 null,
                 [
                     [
-                        [1, [2], '>>>'],
-                        ['a' => 'b'],
-                        '>>>',
+                        [1, [2], ">>>"],
+                        ["a" => "b"],
+                        ">>>",
                     ],
-                    [1, 2, '>>>'],
-                    '>>>',
-                ]
+                    [1, 2, ">>>"],
+                    ">>>",
+                ],
             ],
             [
                 [
                     [
                         [1, [2], 3],
-                        ['a' => 'b'],
+                        ["a" => "b"],
                         new ArrayIterator([1, 2, 3]),
                     ],
                     [1, 2, 3],
-                    new ArrayIterator(['a', 'b', 'c']),
+                    new ArrayIterator(["a", "b", "c"]),
                     true,
-                    new Car('sedan', 5),
+                    new Car("sedan", 5),
                     iterable_concat([1], [1]),
                 ],
                 null,
                 3,
                 [
                     [
-                        [1, '^^^', 3],
-                        ['a' => 'b'],
+                        [1, "^^^", 3],
+                        ["a" => "b"],
                         [1, 2, 3],
                     ],
                     [1, 2, 3],
-                    ['a', 'b', 'c'],
+                    ["a", "b", "c"],
                     true,
                     [
-                        'DusanKasan\Knapsack\Tests\Helpers\Car' => [
-                            'numberOfSeats' => 5,
+                        "Nekman\\Collection\\Tests\\Helpers\\Car" => [
+                            "numberOfSeats" => 5,
                         ],
                     ],
-                    [1, '0//1' => 1],
-                ]
+                    [1, "0//1" => 1],
+                ],
             ],
             [
                 [
                     [
                         [1, [2], 3],
-                        ['a' => 'b'],
+                        ["a" => "b"],
                         new ArrayIterator([1, 2, 3]),
                     ],
                     [1, 2, 3],
-                    new ArrayIterator(['a', 'b', 'c']),
+                    new ArrayIterator(["a", "b", "c"]),
                     true,
-                    new Car('sedan', 5),
+                    new Car("sedan", 5),
                     iterable_concat([1], [1]),
                 ],
                 2,
                 3,
                 [
                     [
-                        [1, '^^^', '>>>'],
-                        ['a' => 'b'],
-                        '>>>',
+                        [1, "^^^", ">>>"],
+                        ["a" => "b"],
+                        ">>>",
                     ],
-                    [1, 2, '>>>'],
-                    '>>>',
-                ]
+                    [1, 2, ">>>"],
+                    ">>>",
+                ],
             ],
         ];
     }
 
-    public function provideEvery()
+    public function provideEvery(): array
     {
         return [
             [
@@ -362,75 +362,75 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideExcept()
+    public function provideExcept(): array
     {
         return [
             [
-                ['a' => 1, 'b' => 2],
+                ["a" => 1, "b" => 2],
                 ["a", "b"],
                 [],
             ],
         ];
     }
 
-    public function provideExtract()
+    public function provideExtract(): array
     {
         return [
             [
                 [
                     [
-                        'a' => [
-                            'b' => 1,
+                        "a" => [
+                            "b" => 1,
                         ],
                     ],
                     [
-                        'a' => [
-                            'b' => 2,
+                        "a" => [
+                            "b" => 2,
                         ],
                     ],
                     [
-                        '*' => [
-                            'b' => 3,
+                        "*" => [
+                            "b" => 3,
                         ],
                     ],
                     [
-                        '.' => [
-                            'b' => 4,
+                        "." => [
+                            "b" => 4,
                         ],
-                        'c' => [
-                            'b' => 5,
+                        "c" => [
+                            "b" => 5,
                         ],
                         [
-                            'a',
+                            "a",
                         ],
                     ],
                 ],
-                '',
+                "",
                 [
                     [
-                        'a' => [
-                            'b' => 1,
+                        "a" => [
+                            "b" => 1,
                         ],
                     ],
                     [
-                        'a' => [
-                            'b' => 2,
+                        "a" => [
+                            "b" => 2,
                         ],
                     ],
                     [
-                        '*' => [
-                            'b' => 3,
+                        "*" => [
+                            "b" => 3,
                         ],
                     ],
                     [
-                        '.' => [
-                            'b' => 4,
+                        "." => [
+                            "b" => 4,
                         ],
-                        'c' => [
-                            'b' => 5,
+                        "c" => [
+                            "b" => 5,
                         ],
                         [
-                            'a',
+                            "a",
                         ],
                     ],
                 ],
@@ -438,29 +438,29 @@ final class FunctionsTest extends TestCase
             [
                 [
                     [
-                        'a' => [
-                            'b' => 1,
+                        "a" => [
+                            "b" => 1,
                         ],
                     ],
                     [
-                        'a' => [
-                            'b' => 2,
+                        "a" => [
+                            "b" => 2,
                         ],
                     ],
                     [
-                        '*' => [
-                            'b' => 3,
+                        "*" => [
+                            "b" => 3,
                         ],
                     ],
                     [
-                        '.' => [
-                            'b' => 4,
+                        "." => [
+                            "b" => 4,
                         ],
-                        'c' => [
-                            'b' => 5,
+                        "c" => [
+                            "b" => 5,
                         ],
                         [
-                            'a',
+                            "a",
                         ],
                     ],
                 ],
@@ -470,103 +470,103 @@ final class FunctionsTest extends TestCase
             [
                 [
                     [
-                        'a' => [
-                            'b' => 1,
+                        "a" => [
+                            "b" => 1,
                         ],
                     ],
                     [
-                        'a' => [
-                            'b' => 2,
+                        "a" => [
+                            "b" => 2,
                         ],
                     ],
                     [
-                        '*' => [
-                            'b' => 3,
+                        "*" => [
+                            "b" => 3,
                         ],
                     ],
                     [
-                        '.' => [
-                            'b' => 4,
+                        "." => [
+                            "b" => 4,
                         ],
-                        'c' => [
-                            'b' => 5,
+                        "c" => [
+                            "b" => 5,
                         ],
                         [
-                            'a',
+                            "a",
                         ],
                     ],
                 ],
                 "*.b",
-                [1, 2, 3, 4, 5]
+                [1, 2, 3, 4, 5],
             ],
             [
                 [
                     [
-                        'a' => [
-                            'b' => 1,
+                        "a" => [
+                            "b" => 1,
                         ],
                     ],
                     [
-                        'a' => [
-                            'b' => 2,
+                        "a" => [
+                            "b" => 2,
                         ],
                     ],
                     [
-                        '*' => [
-                            'b' => 3,
+                        "*" => [
+                            "b" => 3,
                         ],
                     ],
                     [
-                        '.' => [
-                            'b' => 4,
+                        "." => [
+                            "b" => 4,
                         ],
-                        'c' => [
-                            'b' => 5,
+                        "c" => [
+                            "b" => 5,
                         ],
                         [
-                            'a',
+                            "a",
                         ],
                     ],
                 ],
-                '\*.b',
-                [3]
+                "\\*.b",
+                [3],
             ],
             [
                 [
                     [
-                        'a' => [
-                            'b' => 1,
+                        "a" => [
+                            "b" => 1,
                         ],
                     ],
                     [
-                        'a' => [
-                            'b' => 2,
+                        "a" => [
+                            "b" => 2,
                         ],
                     ],
                     [
-                        '*' => [
-                            'b' => 3,
+                        "*" => [
+                            "b" => 3,
                         ],
                     ],
                     [
-                        '.' => [
-                            'b' => 4,
+                        "." => [
+                            "b" => 4,
                         ],
-                        'c' => [
-                            'b' => 5,
+                        "c" => [
+                            "b" => 5,
                         ],
                         [
-                            'a',
+                            "a",
                         ],
                     ],
                 ],
-                '\..b',
-                [4]
-            ]
+                "\\..b",
+                [4],
+            ],
         ];
     }
 
-    public function provideFilter()
+    public function provideFilter(): array
     {
         return [
             [
@@ -582,7 +582,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideFind()
+    public function provideFind(): array
     {
         return [
             [
@@ -612,7 +612,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideFirst()
+    public function provideFirst(): array
     {
         return [
             [
@@ -628,17 +628,17 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideFirst_fail()
+    public function provideFirst_fail(): array
     {
         return [
             [
                 [],
                 ItemNotFound::class,
-            ]
+            ],
         ];
     }
 
-    public function provideFlatten()
+    public function provideFlatten(): array
     {
         return [
             [
@@ -650,27 +650,27 @@ final class FunctionsTest extends TestCase
                 [1, [2, [3]]],
                 1,
                 [1, 2, [3]],
-            ]
-        ];
-    }
-
-    public function provideFlip()
-    {
-        return [
-            [
-                ['a' => 1, 'b' => 2],
-                [1 => 'a', 2 => 'b'],
             ],
         ];
     }
 
-    public function provideFrequencies()
+    public function provideFlip(): array
+    {
+        return [
+            [
+                ["a" => 1, "b" => 2],
+                [1 => "a", 2 => "b"],
+            ],
+        ];
+    }
+
+    public function provideFrequencies(): array
     {
         return [
             [
                 [1, 3, 3, 2],
                 [1 => 1, 3 => 2, 2 => 1],
-            ]
+            ],
         ];
     }
 
@@ -687,24 +687,24 @@ final class FunctionsTest extends TestCase
             ],
             "Test generator function" => [
                 fn () => yield from [1, 2],
-                [1, 2]
+                [1, 2],
             ],
             "Test generator function, return iterable" => [
                 fn () => new ArrayIterator([1, 2]),
-                [1, 2]
+                [1, 2],
             ],
             "Test generator function, return collection" => [
                 fn () => Collection::from([1, 2]),
-                [1, 2]
+                [1, 2],
             ],
             "Test iterable function" => [
                 fn () => [3, 4, 5],
-                [3, 4, 5]
+                [3, 4, 5],
             ],
             "Test collection" => [
                 Collection::from(["foo", "bar"]),
                 ["foo", "bar"],
-            ]
+            ],
         ];
     }
 
@@ -718,7 +718,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideGet()
+    public function provideGet(): array
     {
         return [
             [
@@ -742,7 +742,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideGetOrDefault()
+    public function provideGetOrDefault(): array
     {
         return [
             [
@@ -783,7 +783,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideGet_fail()
+    public function provideGet_fail(): array
     {
         return [
             [
@@ -794,7 +794,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideGroupBy()
+    public function provideGroupBy(): array
     {
         return [
             [
@@ -817,44 +817,44 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideGroupByKey()
+    public function provideGroupByKey(): array
     {
         return [
             [
                 [
-                    'some' => 'thing',
-                    ['letter' => 'A', 'type' => 'caps'],
-                    ['letter' => 'a', 'type' => 'small'],
-                    ['letter' => 'B', 'type' => 'caps'],
-                    ['letter' => 'Z'],
+                    "some" => "thing",
+                    ["letter" => "A", "type" => "caps"],
+                    ["letter" => "a", "type" => "small"],
+                    ["letter" => "B", "type" => "caps"],
+                    ["letter" => "Z"],
                 ],
                 "type",
                 [
-                    ['letter' => 'A', 'type' => 'caps'],
-                    ['letter' => 'a', 'type' => 'small'],
-                    ['letter' => 'B', 'type' => 'caps'],
+                    ["letter" => "A", "type" => "caps"],
+                    ["letter" => "a", "type" => "small"],
+                    ["letter" => "B", "type" => "caps"],
                 ],
             ],
         ];
     }
 
-    public function provideHas()
+    public function provideHas(): array
     {
         return [
             [
-                ['a' => 1, 'b' => 2],
-                'a',
+                ["a" => 1, "b" => 2],
+                "a",
                 true,
             ],
             [
-                ['a' => 1, 'b' => 2],
-                'x',
+                ["a" => 1, "b" => 2],
+                "x",
                 true,
-            ]
+            ],
         ];
     }
 
-    public function provideIndexBy()
+    public function provideIndexBy(): array
     {
         return [
             [
@@ -865,42 +865,42 @@ final class FunctionsTest extends TestCase
             [
                 [1, 3, 3, 2],
                 fn ($v, $k) => $k . $v,
-                ['01' => 1, '13' => 3, '23' => 3, '32' => 2],
+                ["01" => 1, "13" => 3, "23" => 3, "32" => 2],
             ],
         ];
     }
 
-    public function provideInterleave()
+    public function provideInterleave(): array
     {
         return [
             [
                 [1, 3, 3, 2],
                 [
-                    ['a', 'b', 'c', 'd', 'e']
+                    ["a", "b", "c", "d", "e"],
                 ],
-                [1, 'a', 3, 'b', 3, 'c', 2, 'd', 'e'],
+                [1, "a", 3, "b", 3, "c", 2, "d", "e"],
             ],
         ];
     }
 
-    public function provideInterpose()
+    public function provideInterpose(): array
     {
         return [
             [
                 [1, 3, 3, 2],
                 "a",
-                [1, 'a', 3, 'a', 3, 'a', 2],
+                [1, "a", 3, "a", 3, "a", 2],
             ],
         ];
     }
 
-    public function provideIntersect()
+    public function provideIntersect(): array
     {
         return [
             [
                 [1, 2, 3],
                 [
-                    [1, 2]
+                    [1, 2],
                 ],
                 [1, 2],
             ],
@@ -915,7 +915,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideIsEmpty()
+    public function provideIsEmpty(): array
     {
         return [
             [
@@ -925,7 +925,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideIsNotEmpty()
+    public function provideIsNotEmpty(): array
     {
         return [
             [
@@ -935,7 +935,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideKeys()
+    public function provideKeys(): array
     {
         return [
             [
@@ -945,7 +945,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideLast()
+    public function provideLast(): array
     {
         return [
             [
@@ -961,13 +961,13 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideLast_fail()
+    public function provideLast_fail(): array
     {
         return [
             [
                 [],
                 ItemNotFound::class,
-            ]
+            ],
         ];
     }
 
@@ -977,12 +977,12 @@ final class FunctionsTest extends TestCase
             [
                 [1, 2, 3],
                 fn ($number) => $number * 2,
-                [2, 4, 6]
-            ]
+                [2, 4, 6],
+            ],
         ];
     }
 
-    public function provideMapcat()
+    public function provideMapcat(): array
     {
         return [
             [
@@ -998,7 +998,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideMax()
+    public function provideMax(): array
     {
         return [
             [
@@ -1007,12 +1007,12 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [],
-                null
-            ]
+                null,
+            ],
         ];
     }
 
-    public function provideMin()
+    public function provideMin(): array
     {
         return [
             [
@@ -1022,27 +1022,27 @@ final class FunctionsTest extends TestCase
             [
                 [],
                 null,
-            ]
+            ],
         ];
     }
 
-    public function provideOnly()
+    public function provideOnly(): array
     {
         return [
             [
-                ['a' => 1, 'b' => 2, 'c' => 3],
-                ['a', 'b'],
-                ['a' => 1, 'b' => 2],
+                ["a" => 1, "b" => 2, "c" => 3],
+                ["a", "b"],
+                ["a" => 1, "b" => 2],
             ],
             [
-                ['a' => 1, 'b' => 2, 'c' => 3],
-                ['a', 'b', 'x'],
-                ['a' => 1, 'b' => 2],
+                ["a" => 1, "b" => 2, "c" => 3],
+                ["a", "b", "x"],
+                ["a" => 1, "b" => 2],
             ],
         ];
     }
 
-    public function providePartition()
+    public function providePartition(): array
     {
         return [
             [
@@ -1064,7 +1064,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function providePartitionBy()
+    public function providePartitionBy(): array
     {
         return [
             [
@@ -1089,7 +1089,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function providePrepend()
+    public function providePrepend(): array
     {
         return [
             [
@@ -1107,7 +1107,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function providePrintDump()
+    public function providePrintDump(): array
     {
         return [
             [
@@ -1116,7 +1116,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideRange()
+    public function provideRange(): array
     {
         return [
             [
@@ -1124,19 +1124,19 @@ final class FunctionsTest extends TestCase
                 6,
                 null,
                 4,
-                [5, 6]
+                [5, 6],
             ],
             [
                 5,
                 null,
                 null,
                 2,
-                [5, 6]
+                [5, 6],
             ],
         ];
     }
 
-    public function provideRealize()
+    public function provideRealize(): array
     {
         return [
             [
@@ -1163,48 +1163,42 @@ final class FunctionsTest extends TestCase
 
                     return $temp;
                 },
-                ['a' => [1]],
+                ["a" => [1]],
                 true,
                 [[1], 1, 3, 3, 2],
             ],
             [
                 [1, 3, 3, 2],
-                function ($temp, $item) {
-                    return $temp + $item;
-                },
+                fn ($temp, $item) => $temp + $item,
                 0,
                 false,
-                9
+                9,
             ],
             [
                 [1, 3, 3, 2],
-                function ($temp, $item, $key) {
-                    return $temp + $key + $item;
-                },
+                fn ($temp, $item, $key) => $temp + $key + $item,
                 0,
                 false,
-                15
+                15,
             ],
             [
                 [1, 3, 3, 2],
-                function (Collection $temp, $item) {
-                    return $temp->append($item);
-                },
+                fn (Collection $temp, $item) => $temp->append($item),
                 new Collection([]),
                 false,
                 [1, 3, 3, 2],
-            ]
+            ],
         ];
     }
 
-    public function provideReduceRight()
+    public function provideReduceRight(): array
     {
         return [
             [
                 [1, 3, 3, 2],
                 fn ($temp, $e) => $temp . $e,
                 0,
-                '02331',
+                "02331",
             ],
             [
                 [1, 3, 3, 2],
@@ -1221,7 +1215,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideReductions()
+    public function provideReductions(): array
     {
         return [
             [
@@ -1239,11 +1233,11 @@ final class FunctionsTest extends TestCase
             [
                 ["a", "b"],
                 [[0, "a"], [1, "b"]],
-            ]
+            ],
         ];
     }
 
-    public function provideReject()
+    public function provideReject(): array
     {
         return [
             [
@@ -1255,11 +1249,11 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 fn ($v, $k) => $k == 2 && $v == 3,
                 [1, 3, 3 => 2],
-            ]
+            ],
         ];
     }
 
-    public function provideRepeat()
+    public function provideRepeat(): array
     {
         return [
             [
@@ -1270,22 +1264,22 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideRepeat_infinite()
+    public function provideRepeat_infinite(): array
     {
         return [
             [
                 1,
                 2,
-                [1, 1]
+                [1, 1],
             ],
             [
                 1, 3,
-                [1, 1, 1]
-            ]
+                [1, 1, 1],
+            ],
         ];
     }
 
-    public function provideReplace()
+    public function provideReplace(): array
     {
         return [
             [
@@ -1296,13 +1290,13 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideReplaceByKeys()
+    public function provideReplaceByKeys(): array
     {
         return [
             [
-                ['a' => 1, 'b' => 2, 'c' => 3],
-                ['b' => 3],
-                ['a' => 1, 'b' => 3, 'c' => 3],
+                ["a" => 1, "b" => 2, "c" => 3],
+                ["b" => 3],
+                ["a" => 1, "b" => 3, "c" => 3],
             ],
         ];
     }
@@ -1317,12 +1311,12 @@ final class FunctionsTest extends TestCase
                     2 => 3,
                     1 => 3,
                     0 => 1,
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
-    public function provideSecond()
+    public function provideSecond(): array
     {
         return [
             [
@@ -1332,17 +1326,17 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSecond_fail()
+    public function provideSecond_fail(): array
     {
         return [
             [
                 [1],
                 ItemNotFound::class,
-            ]
+            ],
         ];
     }
 
-    public function provideSerializeUnserialize()
+    public function provideSerializeUnserialize(): array
     {
         return [
             [
@@ -1350,11 +1344,11 @@ final class FunctionsTest extends TestCase
             ],
             [
                 ["foo" => "bar", 0 => 1],
-            ]
+            ],
         ];
     }
 
-    public function provideShuffle()
+    public function provideShuffle(): array
     {
         return [
             [
@@ -1369,11 +1363,11 @@ final class FunctionsTest extends TestCase
         return [
             "Test array" => [
                 [1, 2, 3],
-                3
+                3,
             ],
             "Test iterator" => [
                 new ArrayIterator([1, 2, 3, 4]),
-                4
+                4,
             ],
             "Test countable" => [
                 new class implements Countable, IteratorAggregate {
@@ -1387,12 +1381,12 @@ final class FunctionsTest extends TestCase
                         yield from [1, 2, 3];
                     }
                 },
-                1337
-            ]
+                1337,
+            ],
         ];
     }
 
-    public function provideSizeIs()
+    public function provideSizeIs(): array
     {
         return [
             [
@@ -1413,7 +1407,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSizeIsBetween()
+    public function provideSizeIsBetween(): array
     {
         return [
             [
@@ -1443,7 +1437,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSizeIsGreaterThan()
+    public function provideSizeIsGreaterThan(): array
     {
         return [
             [
@@ -1464,7 +1458,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSizeIsLessThan()
+    public function provideSizeIsLessThan(): array
     {
         return [
             [
@@ -1485,7 +1479,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSlice()
+    public function provideSlice(): array
     {
         return [
             [
@@ -1503,7 +1497,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSome()
+    public function provideSome(): array
     {
         return [
             [
@@ -1544,15 +1538,13 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [3, 1, 2],
-                function ($v1, $v2, $k1, $k2) {
-                    return $k1 < $k2 || $v1 == $v2;
-                },
+                fn ($v1, $v2, $k1, $k2) => $k1 < $k2 || $v1 == $v2,
                 [2 => 2, 1 => 1, 0 => 3],
-            ]
+            ],
         ];
     }
 
-    public function provideSplitAt()
+    public function provideSplitAt(): array
     {
         return [
             [
@@ -1560,13 +1552,13 @@ final class FunctionsTest extends TestCase
                 2,
                 [
                     [1, 3],
-                    [2 => 3, 3 => 2]
+                    [2 => 3, 3 => 2],
                 ],
             ],
         ];
     }
 
-    public function provideSplitWith()
+    public function provideSplitWith(): array
     {
         return [
             [
@@ -1588,7 +1580,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideSum()
+    public function provideSum(): array
     {
         return [
             [
@@ -1598,7 +1590,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTake()
+    public function provideTake(): array
     {
         return [
             [
@@ -1609,7 +1601,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTakeNth()
+    public function provideTakeNth(): array
     {
         return [
             [
@@ -1620,7 +1612,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTakeWhile()
+    public function provideTakeWhile(): array
     {
         return [
             [
@@ -1636,32 +1628,32 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideToArray()
+    public function provideToArray(): array
     {
         return [
             [
                 function () {
-                    yield 'no key';
-                    yield 'with key' => 'this value is overwritten by the same key';
-                    yield 'nested' => [
-                        'y' => 'z',
+                    yield "no key";
+                    yield "with key" => "this value is overwritten by the same key";
+                    yield "nested" => [
+                        "y" => "z",
                     ];
-                    yield 'iterator is not converted' => new ArrayIterator(["foo"]);
-                    yield 'with key' => 'x';
+                    yield "iterator is not converted" => new ArrayIterator(["foo"]);
+                    yield "with key" => "x";
                 },
                 [
-                    'no key',
-                    'with key' => 'x',
-                    'nested' => [
-                        'y' => 'z',
+                    "no key",
+                    "with key" => "x",
+                    "nested" => [
+                        "y" => "z",
                     ],
-                    'iterator is not converted' => new ArrayIterator(["foo"]),
+                    "iterator is not converted" => new ArrayIterator(["foo"]),
                 ],
-            ]
+            ],
         ];
     }
 
-    public function provideToString()
+    public function provideToString(): array
     {
         return [
             [
@@ -1671,7 +1663,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTransformer()
+    public function provideTransformer(): array
     {
         return [
             [
@@ -1682,7 +1674,7 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTransformer_fail()
+    public function provideTransformer_fail(): array
     {
         return [
             [
@@ -1693,37 +1685,37 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTranspose()
+    public function provideTranspose(): array
     {
         return [
             [
                 [
-                    new Collection(['a', 'b', 'c', 'd']),
-                    new Collection(['apple', 'box', 'car']),
+                    new Collection(["a", "b", "c", "d"]),
+                    new Collection(["apple", "box", "car"]),
                 ],
                 [
-                    new Collection(['a', 'apple']),
-                    new Collection(['b', 'box']),
-                    new Collection(['c', 'car']),
-                    new Collection(['d', null]),
-                ]
+                    new Collection(["a", "apple"]),
+                    new Collection(["b", "box"]),
+                    new Collection(["c", "car"]),
+                    new Collection(["d", null]),
+                ],
             ],
             [
                 [
                     new Collection([1, 2, 3]),
-                    new Collection([4, 5, new Collection(['foo', 'bar'])]),
+                    new Collection([4, 5, new Collection(["foo", "bar"])]),
                     new Collection([7, 8, 9]),
                 ],
                 [
                     new Collection([1, 4, 7]),
                     new Collection([2, 5, 8]),
-                    new Collection([3, new Collection(['foo', 'bar']), 9]),
-                ]
-            ]
+                    new Collection([3, new Collection(["foo", "bar"]), 9]),
+                ],
+            ],
         ];
     }
 
-    public function provideTranspose_fail()
+    public function provideTranspose_fail(): array
     {
         return [
             [
@@ -1733,21 +1725,21 @@ final class FunctionsTest extends TestCase
                     [7, 8, 9],
                 ],
                 InvalidArgument::class,
-            ]
+            ],
         ];
     }
 
-    public function provideValues()
+    public function provideValues(): array
     {
         return [
             [
-                ['a' => 1, 'b' => 2],
+                ["a" => 1, "b" => 2],
                 [1, 2],
             ],
         ];
     }
 
-    public function provideZip()
+    public function provideZip(): array
     {
         return [
             [
@@ -1756,7 +1748,7 @@ final class FunctionsTest extends TestCase
                 [
                     [1, 4],
                     [2, 5],
-                    [3, 6]
+                    [3, 6],
                 ],
             ],
         ];
@@ -1872,7 +1864,7 @@ final class FunctionsTest extends TestCase
 
     public function testFilter_falsy_values(): void
     {
-        $input = [false, null, '', 0, 0.0, []];
+        $input = [false, null, "", 0, 0.0, []];
         $this->assertTrue(Collection::from($input)->filter()->isEmpty());
     }
 
