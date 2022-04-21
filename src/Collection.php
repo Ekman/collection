@@ -40,9 +40,9 @@ class Collection implements CollectionInterface
         return new self(iterable_range($start, $end, $step));
     }
 
-    public static function repeat(mixed $initial, int $nItems = -1): self
+    public static function repeat(mixed $startValue, int $nItems = -1): self
     {
-        return new self(iterable_repeat($initial, $nItems));
+        return new self(iterable_repeat($startValue, $nItems));
     }
 
     public function __clone(): void
@@ -155,11 +155,6 @@ class Collection implements CollectionInterface
         return dump($this->it, $maxItemsPerCollection, $maxDepth);
     }
 
-    public function duplicate(): self
-    {
-        return duplicate($this);
-    }
-
     public function each(callable $each): self
     {
         return new self(iterable_each($this->it, $each));
@@ -185,9 +180,11 @@ class Collection implements CollectionInterface
         return new self(iterable_filter($this->it, $filter));
     }
 
-    public function find(mixed $needle, mixed $default = null): mixed
+    public function find(callable $find, mixed $default = null, bool $convertToIterable = false): mixed
     {
-        return iterable_find($this->it, $needle, $default);
+        $result = iterable_find($this->it, $find, $default);
+
+        return $result && is_iterable($result) ? new self($result) : $result;
     }
 
     public function first(bool $convertToIterable = false): mixed
@@ -324,10 +321,11 @@ class Collection implements CollectionInterface
         return new self(iterable_only($this->it, $keys));
     }
 
-    public function partition(int $nItems): self
+    public function partition(int $nItems, int $step = 0, iterable $padding = []): self
     {
-        $partition = iterable_partition($this->it, $nItems);
+        $partition = iterable_partition($this->it, $nItems, $step, $padding);
         $partition = iterable_map($partition, fn ($it) => is_iterable($it) ? new self($it) : $it);
+      
         return new self($partition);
     }
 
@@ -351,20 +349,21 @@ class Collection implements CollectionInterface
         return new self(iterable_realize($this->it));
     }
 
-    public function reduce(callable $reduce, mixed $initial, bool $convertToCollection = false): mixed
+    public function reduce(callable $reduce, mixed $startValue, bool $convertToIterable = false): mixed
     {
-        $reduce = iterable_reduce($this->it, $reduce, $initial);
-        return $convertToCollection && is_iterable($reduce) ? new self($reduce) : $reduce;
+        $reduce = iterable_reduce($this->it, $reduce, $startValue);
+        return $convertToIterable && is_iterable($reduce) ? new self($reduce) : $reduce;
     }
 
-    public function reduceRight(callable $reduceRight, mixed $initial): mixed
+    public function reduceRight(callable $reduceRight, mixed $startValue, bool $convertToIterable = false): mixed
     {
-        return iterable_reduce_right($this->it, $reduceRight, $initial);
+        $reduceRight = iterable_reduce_right($this->it, $reduceRight, $startValue);
+        return $convertToIterable && is_iterable($reduceRight) ? new self($reduceRight) : $reduceRight;
     }
 
-    public function reductions(callable $reductions, mixed $initial): self
+    public function reductions(callable $reductions, mixed $startValue): self
     {
-        return new self(iterable_reductions($this->it, $reductions, $initial));
+        return new self(iterable_reductions($this->it, $reductions, $startValue));
     }
 
     public function referenceKeyValue(): self
@@ -392,9 +391,10 @@ class Collection implements CollectionInterface
         return new self(iterable_reverse($this->it));
     }
 
-    public function second(): mixed
+    public function second(bool $convertToIterable = false): mixed
     {
-        return iterable_second($this->it);
+        $second = iterable_second($this->it);
+        return $second && is_iterable($second) ? new self($second) : $second;
     }
 
     public function shuffle(): self

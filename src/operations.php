@@ -201,7 +201,7 @@ function iterable_filter(iterable $it, ?callable $filter = null): iterable
     }
 }
 
-function iterable_find(iterable $it, callable $find, mixed $default = null): mixed
+function iterable_find(iterable $it, callable $find, mixed $default = nulle): mixed
 {
     foreach ($it as $key => $value) {
         if ($find($value, $key)) {
@@ -275,13 +275,13 @@ function iterable_map(iterable $it, callable $map): iterable
     }
 }
 
-function iterable_reduce(iterable $it, callable $reduce, mixed $initial): mixed
+function iterable_reduce(iterable $it, callable $reduce, mixed $startValue): mixed
 {
     foreach ($it as $key => $value) {
-        $initial = $reduce($initial, $value, $key);
+        $startValue = $reduce($startValue, $value, $key);
     }
 
-    return $initial;
+    return $startValue;
 }
 
 function iterable_size(iterable $it): int
@@ -657,9 +657,9 @@ function iterable_prepend(iterable $it, mixed $value, mixed $key = null): iterab
     yield from $it;
 }
 
-function iterable_reduce_right(iterable $it, callable $reduceRight, mixed $initial): mixed
+function iterable_reduce_right(iterable $it, callable $reduceRight, mixed $startValue): mixed
 {
-    return iterable_reduce(iterable_reverse($it), $reduceRight, $initial);
+    return iterable_reduce(iterable_reverse($it), $reduceRight, $startValue);
 }
 
 function iterable_reverse(iterable $it): iterable
@@ -667,12 +667,12 @@ function iterable_reverse(iterable $it): iterable
     return array_reverse(iterable_to_array($it), true);
 }
 
-function iterable_reductions(iterable $it, callable $reductions, mixed $initial): iterable
+function iterable_reductions(iterable $it, callable $reductions, mixed $startValue): iterable
 {
-    yield $initial;
+    yield $startValue;
 
     foreach ($it as $key => $value) {
-        yield $initial = $reductions($initial, $value, $key);
+        yield $startValue = $reductions($startValue, $value, $key);
     }
 }
 
@@ -916,7 +916,9 @@ function iterable_second(iterable $it): mixed
 function iterable_shuffle(iterable $it): iterable
 {
     $buffer = iterable_to_array(
-        iterable_reference_key_value($it)
+        iterable_values(
+            iterable_reference_key_value($it)
+        )
     );
 
     shuffle($buffer);

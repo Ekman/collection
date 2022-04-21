@@ -2133,9 +2133,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideReduce */
-    public function testReduce($input, $reduce, $initial, $convertToCollection, $expected): void
+    public function testReduce($input, $reduce, $startValue, $convertToCollection, $expected): void
     {
-        $result = Collection::from($input)->reduce($reduce, $initial, $convertToCollection);
+        $result = Collection::from($input)->reduce($reduce, $startValue, $convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -2145,15 +2145,15 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideReduceRight */
-    public function testReduceRight($input, $reduce, $initial, $expect): void
+    public function testReduceRight($input, $reduce, $startValue, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->reduceRight($reduce, $initial));
+        $this->assertEquals($expect, Collection::from($input)->reduceRight($reduce, $startValue));
     }
 
     /** @dataProvider provideReductions */
-    public function testReductions($input, $reductions, $initial, $expect): void
+    public function testReductions($input, $reductions, $startValue, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->reductions($reductions, $initial)->toArray());
+        $this->assertEquals($expect, Collection::from($input)->reductions($reductions, $startValue)->toArray());
     }
 
     /** @dataProvider provideReferenceKeyValue */
@@ -2169,17 +2169,17 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideRepeat */
-    public function testRepeat($initial, $nItems, $expect): void
+    public function testRepeat($startValue, $nItems, $expect): void
     {
-        $this->assertEquals($expect, Collection::repeat($initial, $nItems)->toArray());
+        $this->assertEquals($expect, Collection::repeat($startValue, $nItems)->toArray());
     }
 
     /** @dataProvider provideRepeat_infinite */
-    public function testRepeat_infinite($initial, $nItems, $expected): void
+    public function testRepeat_infinite($startValue, $nItems, $expected): void
     {
         $this->assertEquals(
             $expected,
-            Collection::repeat($initial)->take($nItems)->toArray()
+            Collection::repeat($startValue)->take($nItems)->toArray()
         );
     }
 
