@@ -8,32 +8,20 @@ use function Nekman\Collection\decrement;
 use function Nekman\Collection\identity;
 use function Nekman\Collection\increment;
 
-class UtilitiesTest extends TestCase
+final class UtilitiesTest extends TestCase
 {
     /** @dataProvider provideCompare */
-    public function testCompare($a, $b, $expect): void
+    public function testCompare(mixed $a, mixed $b, int $expect): void
     {
         $this->assertEquals($expect, compare($a, $b));
     }
 
-    public function provideCompare()
+    public function provideCompare(): array
     {
         return [
-            [
-                1,
-                2,
-                1
-            ],
-            [
-                2,
-                1,
-                -1
-            ],
-            [
-                2,
-                2,
-                0
-            ]
+            [1, 2, -1],
+            [2, 1, 1],
+            [2, 2, 0],
         ];
     }
 
