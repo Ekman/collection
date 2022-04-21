@@ -24,6 +24,8 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
 
     public function reduce(callable $reduce, mixed $initial, bool $convertToCollection = false): mixed;
 
+    public function countBy(callable $countBy): self;
+
     public function size(): int;
 
     public function sizeIsBetween(int $fromSize, int $toSize): bool;

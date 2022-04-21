@@ -53,6 +53,16 @@ final class FunctionsTest extends TestCase
                 ["a", "b"],
                 [1, 2],
                 ["a" => 1, "b" => 2]
+            ],
+            [
+                ["a", "b"],
+                [1],
+                ["a" => 1],
+            ],
+            [
+                ["a", "b"],
+                [1, 2, 3],
+                ["a" => 1, "b" => 2]
             ]
         ];
     }
@@ -67,6 +77,38 @@ final class FunctionsTest extends TestCase
                 ],
                 [4, 5, 3, 2]
             ]
+        ];
+    }
+
+    public function provideContains()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                3,
+                true,
+            ],
+            [
+                [1, 3, 3, 2],
+                true,
+                false,
+            ]
+        ];
+    }
+
+    public function provideCountBy()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v % 2 == 0 ? "even" : "odd",
+                ["odd" => 3, "even" => 1],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => ($k + $v) % 2 == 0 ? 'even' : 'odd',
+                ["odd" => 3, "even" => 1],
+            ],
         ];
     }
 
@@ -87,6 +129,32 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 [1, 3, 3 => 2],
             ]
+        ];
+    }
+
+    public function provideEvery()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v > 0,
+                true,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v > 1,
+                false,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $v > 0 && $k >= 0,
+                true,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $v > 0 && $k > 0,
+                false,
+            ],
         ];
     }
 
@@ -118,6 +186,16 @@ final class FunctionsTest extends TestCase
                 [1, [2, [3]]],
                 1,
                 [1, 2, [3]],
+            ]
+        ];
+    }
+
+    public function provideFrequencies()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                [1 => 1, 3 => 2, 2 => 1],
             ]
         ];
     }
@@ -162,6 +240,42 @@ final class FunctionsTest extends TestCase
             [
                 1,
                 InvalidArgument::class,
+            ],
+        ];
+    }
+
+    public function provideHas()
+    {
+        return [
+            [
+                ['a' => 1, 'b' => 2],
+                'a',
+                true,
+            ],
+            [
+                ['a' => 1, 'b' => 2],
+                'x',
+                true,
+            ]
+        ];
+    }
+
+    public function provideIsEmpty()
+    {
+        return [
+            [
+                [],
+                true,
+            ],
+        ];
+    }
+
+    public function provideIsNotEmpty()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                true,
             ],
         ];
     }
@@ -281,6 +395,125 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideSizeIs()
+    {
+        return [
+            [
+                [1, 2],
+                2,
+                true,
+            ],
+            [
+                [1, 2],
+                3,
+                false,
+            ],
+            [
+                [1, 2],
+                0,
+                false,
+            ],
+        ];
+    }
+
+    public function provideSizeIsBetween()
+    {
+        return [
+            [
+                [1, 2],
+                1,
+                3,
+                true,
+            ],
+            [
+                [1, 2],
+                3,
+                4,
+                false,
+            ],
+            [
+                [1, 2],
+                0,
+                0,
+                false,
+            ],
+            [
+                [1, 2],
+                3,
+                1,
+                true,
+            ],
+        ];
+    }
+
+    public function provideSizeIsGreaterThan()
+    {
+        return [
+            [
+                [1, 2],
+                2,
+                false,
+            ],
+            [
+                [1, 2],
+                1,
+                true,
+            ],
+            [
+                [1, 2],
+                0,
+                true,
+            ],
+        ];
+    }
+
+    public function provideSizeIsLessThan()
+    {
+        return [
+            [
+                [1, 2],
+                0,
+                false,
+            ],
+            [
+                [1, 2],
+                2,
+                false,
+            ],
+            [
+                [1, 2],
+                3,
+                true,
+            ],
+        ];
+    }
+
+    public function provideSome()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v < -1,
+                false,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $v > 0 && $k < -1,
+                false,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v < 2,
+                true,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $v > 0 && $k > 0,
+                true,
+            ],
+        ];
+    }
+
     public function provideSort(): array
     {
         return [
@@ -329,6 +562,16 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideToString()
+    {
+        return [
+            [
+                [2, "a", 3, null],
+                "2a3",
+            ],
+        ];
+    }
+
     /** @dataProvider provideAppend */
     public function testAppend($input, $append, $key, $expected): void
     {
@@ -353,6 +596,18 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, Collection::from($input)->concat(...$concat)->toArray());
     }
 
+    /** @dataProvider provideContains */
+    public function testContains($input, $contains, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->contains($contains));
+    }
+
+    /** @dataProvider provideCountBy */
+    public function testCountBy($input, $countBy, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->countBy($countBy));
+    }
+
     /** @dataProvider provideDereferenceKeyValue */
     public function testDereferenceKeyValue($input, $expected): void
     {
@@ -363,6 +618,12 @@ final class FunctionsTest extends TestCase
     public function testDistinct($input, $expected)
     {
         $this->assertEquals($expected, Collection::from($input)->distinct()->toArray());
+    }
+
+    /** @dataProvider provideEvery */
+    public function testEvery($input, $every, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->every($every));
     }
 
     /** @dataProvider provideFilter */
@@ -383,6 +644,12 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, Collection::from($input)->flatten($depth)->toArray());
     }
 
+    /** @dataProvider provideFrequencies */
+    public function testFrequencies($input, $expected)
+    {
+        $this->assertEquals($expected, Collection::from($input)->frequencies()->toArray());
+    }
+
     /** @dataProvider provideFromAndCreate */
     public function testFrom($input, $expected): void
     {
@@ -394,6 +661,24 @@ final class FunctionsTest extends TestCase
     {
         $this->expectException($expected);
         Collection::from($input)->toArray(true);
+    }
+
+    /** @dataProvider provideHas */
+    public function testHas($input, $has, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->has($has));
+    }
+
+    /** @dataProvider provideIsEmpty */
+    public function testIsEmpty($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->isEmpty());
+    }
+
+    /** @dataProvider provideIsNotEmpty */
+    public function testIsNotEmpty($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->isNotEmpty());
     }
 
     public function testIterate_infinite(): void
@@ -469,6 +754,36 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, Collection::from($input)->size());
     }
 
+    /** @dataProvider provideSizeIs */
+    public function testSizeIs($input, $sizeIs, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->sizeIs($sizeIs));
+    }
+
+    /** @dataProvider provideSizeIsBetween */
+    public function testSizeIsBetween($input, $from, $to, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->sizeIsBetween($from, $to));
+    }
+
+    /** @dataProvider provideSizeIsGreaterThan */
+    public function testSizeIsGreaterThan($input, $greaterThan, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->sizeIsGreaterThan($greaterThan));
+    }
+
+    /** @dataProvider provideSizeIsLessThan */
+    public function testSizeIsLessThan($input, $lessThan, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->sizeIsLessThan($lessThan));
+    }
+
+    /** @dataProvider provideSome */
+    public function testSome($input, $some, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->some($some));
+    }
+
     /** @dataProvider provideSort */
     public function testSort($input, $sort, $expected): void
     {
@@ -481,51 +796,9 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, Collection::from($input)->toArray());
     }
 
-    /** @dataProvider provideFrequencies */
-    public function testFrequencies($input, $expected)
+    /** @dataProvider provideToString */
+    public function testToString($input, $expect): void
     {
-        $this->assertEquals($expected, Collection::from($input)->frequencies()->toArray());
-    }
-
-    public function provideFrequencies()
-    {
-        return [
-            [
-                [1, 3, 3, 2],
-                [1 => 1, 3 => 2, 2 => 1],
-            ]
-        ];
-    }
-
-    /** @dataProvider provideEvery */
-    public function testEvery($input, $every, $expected)
-    {
-        $this->assertEquals($expected, Collection::from($input)->every($every));
-    }
-
-    public function provideEvery()
-    {
-        return [
-           [
-               [1, 3, 3, 2],
-                fn ($v) => $v > 0,
-                true,
-           ],
-            [
-                [1, 3, 3, 2],
-                fn ($v) => $v > 1,
-                false,
-            ],
-            [
-                [1, 3, 3, 2],
-                fn ($v, $k) => $v > 0 && $k >= 0,
-                true,
-            ],
-            [
-                [1, 3, 3, 2],
-                fn ($v, $k) => $v > 0 && $k > 0,
-                false,
-            ],
-        ];
+        $this->assertEquals($expect, Collection::from($input)->toString());
     }
 }

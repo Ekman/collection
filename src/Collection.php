@@ -459,4 +459,9 @@ class Collection implements CollectionInterface
     {
         return new self(iterable_zip($this->it, ...$its));
     }
+
+    public function countBy(callable $countBy): CollectionInterface
+    {
+        return new self(iterable_count_by($this->it, $countBy));
+    }
 }
