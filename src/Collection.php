@@ -8,7 +8,7 @@ use Traversable;
 
 class Collection implements CollectionInterface
 {
-    private readonly iterable $it;
+    private iterable $it;
 
     public function __construct(iterable|callable $it = [])
     {
