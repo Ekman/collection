@@ -7,6 +7,7 @@ use Countable;
 use IteratorAggregate;
 use Nekman\Collection\Collection;
 use Nekman\Collection\Exceptions\InvalidArgument;
+use Nekman\Collection\Exceptions\InvalidReturnValue;
 use Nekman\Collection\Exceptions\ItemNotFound;
 use Nekman\Collection\Exceptions\NoMoreItems;
 use Nekman\Collection\Tests\Helpers\Car;
@@ -45,6 +46,10 @@ final class FunctionsTest extends TestCase
             "Test float" => [
                 [6.4, 3.2, 8.9],
                 6.166666666666667
+            ],
+            [
+                [],
+                0,
             ]
         ];
     }
@@ -115,6 +120,17 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideCycle()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                8,
+                [1, 3, 3, 2, 1, 3, 3, 2],
+            ],
+        ];
+    }
+
     public function provideDereferenceKeyValue(): array
     {
         return [
@@ -153,6 +169,17 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 [1, 3, 3 => 2],
             ]
+        ];
+    }
+
+    public function provideDrop()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                2,
+                [2 => 3, 3 => 2],
+            ],
         ];
     }
 
@@ -601,6 +628,16 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideFirst_fail()
+    {
+        return [
+            [
+                [],
+                ItemNotFound::class,
+            ]
+        ];
+    }
+
     public function provideFlatten()
     {
         return [
@@ -757,6 +794,50 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideGroupBy()
+    {
+        return [
+            [
+                [1, 2, 3, 4, 5],
+                fn ($i) => $i % 2,
+                [
+                    [2, 4],
+                    [1, 3, 5],
+                ],
+            ],
+            [
+                [1, 2, 3, 4, 5],
+                fn ($i, $k) => ($k + $i) % 3,
+                [
+                    [2, 5],
+                    [1, 4],
+                    [3],
+                ],
+            ],
+        ];
+    }
+
+    public function provideGroupByKey()
+    {
+        return [
+            [
+                [
+                    'some' => 'thing',
+                    ['letter' => 'A', 'type' => 'caps'],
+                    ['letter' => 'a', 'type' => 'small'],
+                    ['letter' => 'B', 'type' => 'caps'],
+                    ['letter' => 'Z'],
+                ],
+                "type",
+                [
+                    ['letter' => 'A', 'type' => 'caps'],
+                    ['letter' => 'a', 'type' => 'small'],
+                    ['letter' => 'B', 'type' => 'caps'],
+                ],
+            ],
+        ];
+    }
+
     public function provideHas()
     {
         return [
@@ -770,6 +851,67 @@ final class FunctionsTest extends TestCase
                 'x',
                 true,
             ]
+        ];
+    }
+
+    public function provideIndexBy()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v,
+                [1 => 1, 3 => 3, 2 => 2],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $k . $v,
+                ['01' => 1, '13' => 3, '23' => 3, '32' => 2],
+            ],
+        ];
+    }
+
+    public function provideInterleave()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                [
+                    ['a', 'b', 'c', 'd', 'e']
+                ],
+                [1, 'a', 3, 'b', 3, 'c', 2, 'd', 'e'],
+            ],
+        ];
+    }
+
+    public function provideInterpose()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                "a",
+                [1, 'a', 3, 'a', 3, 'a', 2],
+            ],
+        ];
+    }
+
+    public function provideIntersect()
+    {
+        return [
+            [
+                [1, 2, 3],
+                [
+                    [1, 2]
+                ],
+                [1, 2],
+            ],
+            [
+                [1, 2, 3],
+                [
+                    [1],
+                    [3],
+                ],
+                [1, 3],
+            ],
         ];
     }
 
@@ -819,6 +961,16 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideLast_fail()
+    {
+        return [
+            [
+                [],
+                ItemNotFound::class,
+            ]
+        ];
+    }
+
     public function provideMap(): array
     {
         return [
@@ -830,6 +982,22 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideMapcat()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => [[$v]],
+                [[1], [3], [3], [2]],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => [[$k + $v]],
+                [[1], [4], [5], [5]],
+            ],
+        ];
+    }
+
     public function provideMax()
     {
         return [
@@ -837,6 +1005,10 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 3,
             ],
+            [
+                [],
+                null
+            ]
         ];
     }
 
@@ -846,6 +1018,100 @@ final class FunctionsTest extends TestCase
             [
                 [1, 3, 3, 2],
                 1,
+            ],
+            [
+                [],
+                null,
+            ]
+        ];
+    }
+
+    public function provideOnly()
+    {
+        return [
+            [
+                ['a' => 1, 'b' => 2, 'c' => 3],
+                ['a', 'b'],
+                ['a' => 1, 'b' => 2],
+            ],
+            [
+                ['a' => 1, 'b' => 2, 'c' => 3],
+                ['a', 'b', 'x'],
+                ['a' => 1, 'b' => 2],
+            ],
+        ];
+    }
+
+    public function providePartition()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                3,
+                [
+                    [1, 3, 3],
+                    [3 => 2],
+                ],
+            ],
+            [
+                [1, 3, 3, 2],
+                2,
+                [
+                    [1, 3],
+                    [2 => 3, 3 => 2],
+                ],
+            ],
+        ];
+    }
+
+    public function providePartitionBy()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v % 3 == 0,
+                [
+                    [1],
+                    [1 => 3, 2 => 3],
+                    [3 => 2],
+                ],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $k - $v,
+                [
+                    [1],
+                    [1 => 3],
+                    [2 => 3],
+                    [3 => 2],
+                ],
+            ],
+        ];
+    }
+
+    public function providePrepend()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                1,
+                null,
+                [4 => 1, 0 => 1, 1 => 3, 2 => 3, 3 => 2],
+            ],
+            [
+                [1, 3, 3, 2],
+                1,
+                "a",
+                ["a" => 1, 0 => 1, 1 => 3, 2 => 3, 3 => 2],
+            ],
+        ];
+    }
+
+    public function providePrintDump()
+    {
+        return [
+            [
+                [1, [2], 3],
             ],
         ];
     }
@@ -866,6 +1132,16 @@ final class FunctionsTest extends TestCase
                 null,
                 2,
                 [5, 6]
+            ],
+        ];
+    }
+
+    public function provideRealize()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                Collection::from([1, 3, 3, 2]),
             ],
         ];
     }
@@ -921,6 +1197,30 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideReduceRight()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($temp, $e) => $temp . $e,
+                0,
+                '02331',
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($temp, $key, $item) => $temp + $key + $item,
+                0,
+                15,
+            ],
+            [
+                [1, 3, 3, 2],
+                fn (Collection $temp, $item) => $temp->append($item),
+                new Collection(),
+                new Collection([2, 3, 3, 1]),
+            ],
+        ];
+    }
+
     public function provideReductions()
     {
         return [
@@ -939,6 +1239,22 @@ final class FunctionsTest extends TestCase
             [
                 ["a", "b"],
                 [[0, "a"], [1, "b"]],
+            ]
+        ];
+    }
+
+    public function provideReject()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v == 3,
+                [1, 3 => 2],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $k == 2 && $v == 3,
+                [1, 3, 3 => 2],
             ]
         ];
     }
@@ -969,6 +1285,28 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideReplace()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                [3 => "a"],
+                [1, "a", "a", 2],
+            ],
+        ];
+    }
+
+    public function provideReplaceByKeys()
+    {
+        return [
+            [
+                ['a' => 1, 'b' => 2, 'c' => 3],
+                ['b' => 3],
+                ['a' => 1, 'b' => 3, 'c' => 3],
+            ],
+        ];
+    }
+
     public function provideReverse(): array
     {
         return [
@@ -990,6 +1328,38 @@ final class FunctionsTest extends TestCase
             [
                 [1, 2],
                 2,
+            ],
+        ];
+    }
+
+    public function provideSecond_fail()
+    {
+        return [
+            [
+                [1],
+                ItemNotFound::class,
+            ]
+        ];
+    }
+
+    public function provideSerializeUnserialize()
+    {
+        return [
+            [
+                [1, 2, 3],
+            ],
+            [
+                ["foo" => "bar", 0 => 1],
+            ]
+        ];
+    }
+
+    public function provideShuffle()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                9,
             ],
         ];
     }
@@ -1115,6 +1485,24 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideSlice()
+    {
+        return [
+            [
+                [1, 2, 3, 4, 5],
+                2,
+                4,
+                [2 => 3, 3 => 4],
+            ],
+            [
+                [1, 2, 3, 4, 5],
+                4,
+                -1,
+                [2 => 3, 3 => 4],
+            ],
+        ];
+    }
+
     public function provideSome()
     {
         return [
@@ -1164,6 +1552,90 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideSplitAt()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                2,
+                [
+                    [1, 3],
+                    [2 => 3, 3 => 2]
+                ],
+            ],
+        ];
+    }
+
+    public function provideSplitWith()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v < 3,
+                [
+                    [1],
+                    [1 => 3, 2 => 3, 3 => 2],
+                ],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $v < 2 && $k < 3,
+                [
+                    [1],
+                    [1 => 3, 2 => 3, 3 => 2],
+                ],
+            ],
+        ];
+    }
+
+    public function provideSum()
+    {
+        return [
+            [
+                [1, 2, 3, 4],
+                10,
+            ],
+        ];
+    }
+
+    public function provideTake()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                2,
+                [1, 3],
+            ],
+        ];
+    }
+
+    public function provideTakeNth()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                2,
+                [1, 2 => 3],
+            ],
+        ];
+    }
+
+    public function provideTakeWhile()
+    {
+        return [
+            [
+                [1, 3, 3, 2],
+                fn ($v) => $v < 3,
+                [1],
+            ],
+            [
+                [1, 3, 3, 2],
+                fn ($v, $k) => $k < 2 && $v < 3,
+                [1],
+            ],
+        ];
+    }
+
     public function provideToArray()
     {
         return [
@@ -1195,6 +1667,97 @@ final class FunctionsTest extends TestCase
             [
                 [2, "a", 3, null],
                 "2a3",
+            ],
+        ];
+    }
+
+    public function provideTransformer()
+    {
+        return [
+            [
+                [1, 2, 3],
+                fn (Collection $it) => $it->map("\\Nekman\\Collection\\increment"),
+                [2, 3, 4],
+            ],
+        ];
+    }
+
+    public function provideTransformer_fail()
+    {
+        return [
+            [
+                [1, 2, 3],
+                fn (Collection $it) => $it->first(),
+                InvalidReturnValue::class,
+            ],
+        ];
+    }
+
+    public function provideTranspose()
+    {
+        return [
+            [
+                [
+                    new Collection(['a', 'b', 'c', 'd']),
+                    new Collection(['apple', 'box', 'car']),
+                ],
+                [
+                    new Collection(['a', 'apple']),
+                    new Collection(['b', 'box']),
+                    new Collection(['c', 'car']),
+                    new Collection(['d', null]),
+                ]
+            ],
+            [
+                [
+                    new Collection([1, 2, 3]),
+                    new Collection([4, 5, new Collection(['foo', 'bar'])]),
+                    new Collection([7, 8, 9]),
+                ],
+                [
+                    new Collection([1, 4, 7]),
+                    new Collection([2, 5, 8]),
+                    new Collection([3, new Collection(['foo', 'bar']), 9]),
+                ]
+            ]
+        ];
+    }
+
+    public function provideTranspose_fail()
+    {
+        return [
+            [
+                [
+                    [1, 2, 3],
+                    [4, 5, 6],
+                    [7, 8, 9],
+                ],
+                InvalidArgument::class,
+            ]
+        ];
+    }
+
+    public function provideValues()
+    {
+        return [
+            [
+                ['a' => 1, 'b' => 2],
+                [1, 2],
+            ],
+        ];
+    }
+
+    public function provideZip()
+    {
+        return [
+            [
+                [1, 2, 3],
+                [4, 5, 6],
+                [
+                    [1, 4],
+                    [2, 5],
+                    [3, 6]
+                ],
             ],
         ];
     }
@@ -1235,6 +1798,12 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expect, Collection::from($input)->countBy($countBy));
     }
 
+    /** @dataProvider provideCycle */
+    public function testCycle($input, $take, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->cycle()->take($take)->toArray(true));
+    }
+
     /** @dataProvider provideDereferenceKeyValue */
     public function testDereferenceKeyValue($input, $expected): void
     {
@@ -1251,6 +1820,12 @@ final class FunctionsTest extends TestCase
     public function testDistinct($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->distinct()->toArray());
+    }
+
+    /** @dataProvider provideDrop */
+    public function testDrop($input, $nItems, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->drop($nItems)->toArray());
     }
 
     /** @dataProvider provideDropLast */
@@ -1319,6 +1894,13 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expect, $result);
     }
 
+    /** @dataProvider provideFirst_fail */
+    public function testFirst_fail($input, $expected): void
+    {
+        $this->expectException($expected);
+        Collection::from($input)->first();
+    }
+
     /** @dataProvider provideFlatten */
     public function testFlatten($input, $depth, $expected): void
     {
@@ -1381,10 +1963,46 @@ final class FunctionsTest extends TestCase
         Collection::from($input)->get($key);
     }
 
+    /** @dataProvider provideGroupBy */
+    public function testGroupBy($input, $groupBy, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->groupBy($groupBy)->toArray());
+    }
+
+    /** @dataProvider provideGroupByKey */
+    public function testGroupByKey($input, $key, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->groupByKey($key)->toArray());
+    }
+
     /** @dataProvider provideHas */
     public function testHas($input, $has, $expect): void
     {
         $this->assertEquals($expect, Collection::from($input)->has($has));
+    }
+
+    /** @dataProvider provideIndexBy */
+    public function testIndexBy($input, $indexBy, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->indexBy($indexBy)->toArray());
+    }
+
+    /** @dataProvider provideInterleave */
+    public function testInterleave($input, $interleave, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->interleave(...$interleave)->toArray(true));
+    }
+
+    /** @dataProvider provideInterpose */
+    public function testInterpose($input, $interpose, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->interpose($interpose)->toArray(true));
+    }
+
+    /** @dataProvider provideIntersect */
+    public function testIntersect($input, $intersect, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->intersect(...$intersect)->toArray());
     }
 
     /** @dataProvider provideIsEmpty */
@@ -1433,10 +2051,23 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expect, $result);
     }
 
+    /** @dataProvider provideLast_fail */
+    public function testLast_fail($input, $expected): void
+    {
+        $this->expectException($expected);
+        Collection::from($input)->last();
+    }
+
     /** @dataProvider provideMap */
     public function testMap($input, $map, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->map($map)->toArray(true));
+    }
+
+    /** @dataProvider provideMapcat */
+    public function testMapcat($input, $mapcat, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->mapcat($mapcat)->toArray(true));
     }
 
     /** @dataProvider provideMax */
@@ -1464,10 +2095,49 @@ final class FunctionsTest extends TestCase
         (new Collection($input))->toArray(true);
     }
 
+    /** @dataProvider provideOnly */
+    public function testOnly($input, $only, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->only($only)->toArray());
+    }
+
+    /** @dataProvider providePartition */
+    public function testPartition($input, $nItems, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->partition($nItems)->toArray());
+    }
+
+    /** @dataProvider providePartitionBy */
+    public function testPartitionBy($input, $partitionBy, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->partitionBy($partitionBy)->toArray());
+    }
+
+    /** @dataProvider providePrepend */
+    public function testPrepend($input, $prepend, $key, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->prepend($prepend, $key)->toArray(true));
+    }
+
+    /** @dataProvider providePrintDump */
+    public function testPrintDump($input): void
+    {
+        $col = Collection::from($input);
+        ob_start();
+        $this->assertEquals($col, $col->printDump());
+        $this->assertNotEmpty(ob_get_clean());
+    }
+
     /** @dataProvider provideRange */
     public function testRange($input, $start, $end, $step, $take, $expect): void
     {
         $this->assertEquals($expect, Collection::range($start, $end, $step)->take($take)->toArray());
+    }
+
+    /** @dataProvider provideRealize */
+    public function testRealize($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->realize());
     }
 
     /** @dataProvider provideReduce */
@@ -1482,6 +2152,12 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    /** @dataProvider provideReduceRight */
+    public function testReduceRight($input, $reduce, $initial, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->reduceRight($reduce, $initial));
+    }
+
     /** @dataProvider provideReductions */
     public function testReductions($input, $reductions, $initial, $expect): void
     {
@@ -1492,6 +2168,12 @@ final class FunctionsTest extends TestCase
     public function testReferenceKeyValue($input, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->referenceKeyValue()->toArray(true));
+    }
+
+    /** @dataProvider provideReject */
+    public function testReject($input, $reject, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->reject($reject)->toArray());
     }
 
     /** @dataProvider provideRepeat */
@@ -1509,6 +2191,18 @@ final class FunctionsTest extends TestCase
         );
     }
 
+    /** @dataProvider provideReplace */
+    public function testReplace($input, $replace, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->replace($replace)->toArray());
+    }
+
+    /** @dataProvider provideReplaceByKeys */
+    public function testReplaceByKeys($input, $replaceByKeys, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->replaceByKeys($replaceByKeys)->toArray());
+    }
+
     /** @dataProvider provideReverse */
     public function testReverse($input, $expected): void
     {
@@ -1519,6 +2213,25 @@ final class FunctionsTest extends TestCase
     public function testSecond($input, $expect): void
     {
         $this->assertEquals($expect, Collection::from($input)->second());
+    }
+
+    /** @dataProvider provideSecond_fail */
+    public function testSecond_fail($input, $expect): void
+    {
+        $this->expectException($expect);
+        Collection::from($input)->second();
+    }
+
+    /** @dataProvider provideSerializeUnserialize */
+    public function testSerializeUnserialize($input): void
+    {
+        $this->assertEquals($input, unserialize(serialize($input)));
+    }
+
+    /** @dataProvider provideShuffle */
+    public function testShuffle($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->shuffle()->sum());
     }
 
     /** @dataProvider provideSize */
@@ -1551,6 +2264,12 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expect, Collection::from($input)->sizeIsLessThan($lessThan));
     }
 
+    /** @dataProvider provideSlice */
+    public function testSlice($input, $from, $to, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->slice($from, $to)->toArray());
+    }
+
     /** @dataProvider provideSome */
     public function testSome($input, $some, $expect): void
     {
@@ -1561,6 +2280,42 @@ final class FunctionsTest extends TestCase
     public function testSort($input, $sort, $expected): void
     {
         $this->assertEquals($expected, Collection::from($input)->sort($sort)->toArray(true));
+    }
+
+    /** @dataProvider provideSplitAt */
+    public function testSplitAt($input, $position, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->splitAt($position)->toArray());
+    }
+
+    /** @dataProvider provideSplitWith */
+    public function testSplitWith($input, $contains, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->splitWith($contains)->toArray());
+    }
+
+    /** @dataProvider provideSum */
+    public function testSum($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->sum());
+    }
+
+    /** @dataProvider provideTake */
+    public function testTake($input, $take, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->take($take)->toArray());
+    }
+
+    /** @dataProvider provideTakeNth */
+    public function testTakeNth($input, $step, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->takeNth($step)->toArray());
+    }
+
+    /** @dataProvider provideTakeWhile */
+    public function testTakeWhile($input, $takeWhile, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->takeWhile($takeWhile)->toArray());
     }
 
     /** @dataProvider provideToArray */
@@ -1575,30 +2330,41 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expect, Collection::from($input)->toString());
     }
 
-    /** @dataProvider provideIntersect */
-    public function testIntersect($input, $intersect, $expect): void
+    /** @dataProvider provideTransformer */
+    public function testTransformer($input, $transform, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->intersect(...$intersect)->toArray());
+        $this->assertEquals($expect, Collection::from($input)->transform($transform)->toArray());
     }
 
-    public function provideIntersect()
+    /** @dataProvider provideTransformer_fail */
+    public function testTransformer_fail($input, $transform, $expect): void
     {
-        return [
-            [
-                [1, 2, 3],
-                [
-                    [1, 2]
-                ],
-                [1, 2],
-            ],
-            [
-                [1, 2, 3],
-                [
-                    [1],
-                    [3],
-                ],
-                [1, 3],
-            ],
-        ];
+        $this->expectException($expect);
+        Collection::from($input)->transform($transform)->toArray();
+    }
+
+    /** @dataProvider provideTranspose */
+    public function testTranspose($input, $transpose, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->transpose(...$transpose)->toArray());
+    }
+
+    /** @dataProvider provideTranspose_fail */
+    public function testTranspose_fail($input, $transpose, $expect): void
+    {
+        $this->expectException($expect);
+        Collection::from($input)->transpose(...$transpose)->toArray();
+    }
+
+    /** @dataProvider provideValues */
+    public function testValues($input, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->values()->toArray());
+    }
+
+    /** @dataProvider provideZip */
+    public function testZip($input, $zip, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->zip(...$zip)->toArray());
     }
 }

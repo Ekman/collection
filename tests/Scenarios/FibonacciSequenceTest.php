@@ -1,6 +1,6 @@
 <?php
 
-namespace Nekman\Collection\Tests\Legacy\Scenarios;
+namespace Nekman\Collection\Tests\Scenarios;
 
 use Nekman\Collection\Collection;
 use PHPUnit\Framework\TestCase;

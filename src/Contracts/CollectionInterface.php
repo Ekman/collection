@@ -163,4 +163,10 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function duplicate(): self;
 
     public function dump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): array;
+
+    public function printDump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): self;
+
+    public function replaceByKeys(iterable $replace): self;
+
+    public function replace(iterable $replace): self;
 }
