@@ -325,7 +325,7 @@ class Collection implements CollectionInterface
     {
         $partition = iterable_partition($this->it, $nItems, $step, $padding);
         $partition = iterable_map($partition, fn ($it) => is_iterable($it) ? new self($it) : $it);
-      
+
         return new self($partition);
     }
 
@@ -467,9 +467,11 @@ class Collection implements CollectionInterface
         return new self(iterable_take_while($this->it, $takeWhile));
     }
 
-    public function transform(callable $transformer): self
+    public function transform(callable $transform): self
     {
-        return new self(iterable_transform($this->it, $transformer));
+        $newTransform = fn (iterable $item) => $transform($item instanceof CollectionInterface ? $item : new Collection($item));
+
+        return new self(iterable_transform($this->it, $newTransform));
     }
 
     public function transpose(iterable ...$its): self

@@ -6,6 +6,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Nekman\Collection\Collection;
+use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Nekman\Collection\Exceptions\InvalidReturnValue;
 use Nekman\Collection\Exceptions\ItemNotFound;
@@ -1183,7 +1184,7 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [1, 3, 3, 2],
-                fn (Collection $temp, $item) => $temp->append($item),
+                fn (CollectionInterface $temp, $item) => $temp->append($item),
                 new Collection([]),
                 false,
                 [1, 3, 3, 2],
@@ -1208,7 +1209,7 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [1, 3, 3, 2],
-                fn (Collection $temp, $item) => $temp->append($item),
+                fn (CollectionInterface $temp, $item) => $temp->append($item),
                 new Collection(),
                 new Collection([2, 3, 3, 1]),
             ],
@@ -1663,23 +1664,23 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTransformer(): array
+    public function provideTransform(): array
     {
         return [
             [
                 [1, 2, 3],
-                fn (Collection $it) => $it->map("\\Nekman\\Collection\\increment"),
+                fn (CollectionInterface $it) => $it->map("\\Nekman\\Collection\\increment"),
                 [2, 3, 4],
             ],
         ];
     }
 
-    public function provideTransformer_fail(): array
+    public function provideTransform_fail(): array
     {
         return [
             [
                 [1, 2, 3],
-                fn (Collection $it) => $it->first(),
+                fn (CollectionInterface $it) => $it->first(),
                 InvalidReturnValue::class,
             ],
         ];
@@ -2322,14 +2323,14 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expect, Collection::from($input)->toString());
     }
 
-    /** @dataProvider provideTransformer */
-    public function testTransformer($input, $transform, $expect): void
+    /** @dataProvider provideTransform */
+    public function testTransform($input, $transform, $expect): void
     {
         $this->assertEquals($expect, Collection::from($input)->transform($transform)->toArray());
     }
 
-    /** @dataProvider provideTransformer_fail */
-    public function testTransformer_fail($input, $transform, $expect): void
+    /** @dataProvider provideTransform_fail */
+    public function testTransform_fail($input, $transform, $expect): void
     {
         $this->expectException($expect);
         Collection::from($input)->transform($transform)->toArray();

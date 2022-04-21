@@ -3,6 +3,7 @@
 namespace Nekman\Collection\Tests\Scenarios;
 
 use Nekman\Collection\Collection;
+use Nekman\Collection\Contracts\CollectionInterface;
 use PHPUnit\Framework\TestCase;
 
 final class CustomPassThroughFunctionTest extends TestCase
@@ -33,7 +34,7 @@ final class CustomPassThroughFunctionTest extends TestCase
         ];
 
         //Must take and return a Collection
-        $transpose = function (Collection $collections) {
+        $transpose = function (CollectionInterface $collections) {
             $transposed = array_map(
                 function (...$items) {
                     return $items;

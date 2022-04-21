@@ -675,11 +675,11 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     /**
      * Uses a $transformer callable that takes a Collection and returns Collection on itself.
      *
-     * @param callable $transformer Collection => Collection
+     * @param callable $transform Collection => Collection
      * @return self
      * @throws InvalidReturnValue
      */
-    public function transform(callable $transformer): self;
+    public function transform(callable $transform): self;
 
     /**
      * Transpose each item in a collection, interchanging the row and column indexes.

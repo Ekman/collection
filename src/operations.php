@@ -783,9 +783,9 @@ function iterable_transpose(iterable ...$its): iterable
     );
 }
 
-function iterable_transform(iterable $it, callable $transformer): iterable
+function iterable_transform(iterable $it, callable $transform): iterable
 {
-    $transformed = $transformer($it);
+    $transformed = $transform($it);
 
     if (!is_iterable($transformed)) {
         throw new InvalidReturnValue;
@@ -929,12 +929,12 @@ function iterable_shuffle(iterable $it): iterable
 function duplicate(mixed $input): mixed
 {
     if (is_array($input)) {
-        return iterable_to_array(
-            iterable_map($input, fn ($i) => duplicate($i))
-        );
-    } elseif (is_object($input)) {
-        return clone $input;
-    } else {
-        return $input;
+        return array_map(fn ($i) => duplicate($i), $input);
     }
+
+    if (is_object($input)) {
+        return clone $input;
+    }
+
+    return $input;
 }

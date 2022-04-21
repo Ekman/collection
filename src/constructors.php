@@ -8,16 +8,13 @@ function iterable_iterate(mixed $value, callable $iterate): iterable
 {
     $value = duplicate($value);
 
-    yield $value;
-
-    while (true) {
+    do {
         try {
-            $value = $iterate($value);
-            yield $value;
+            yield $value = $iterate($value);
         } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems) {
             break;
         }
-    }
+    } while (true);
 }
 
 function iterable_repeat(mixed $startValue, int $nItems = -1): iterable
