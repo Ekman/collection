@@ -125,6 +125,27 @@ final class FunctionsTest extends TestCase
         ];
     }
 
+    public function provideDiff()
+    {
+        return [
+            [
+                [1, 2, 3, 4],
+                [
+                    [1, 2],
+                ],
+                [2 => 3, 3 => 4],
+            ],
+            [
+                [1, 2, 3, 4],
+                [
+                    [1, 2],
+                    [3],
+                ],
+                [3 => 4],
+            ],
+        ];
+    }
+
     public function provideDistinct()
     {
         return [
@@ -1220,6 +1241,12 @@ final class FunctionsTest extends TestCase
         $this->assertEquals($expected, Collection::from($input)->dereferenceKeyValue()->toArray(true));
     }
 
+    /** @dataProvider provideDiff */
+    public function testDiff($input, $diff, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->diff(...$diff)->toArray());
+    }
+
     /** @dataProvider provideDistinct */
     public function testDistinct($input, $expected): void
     {
@@ -1546,5 +1573,32 @@ final class FunctionsTest extends TestCase
     public function testToString($input, $expect): void
     {
         $this->assertEquals($expect, Collection::from($input)->toString());
+    }
+
+    /** @dataProvider provideIntersect */
+    public function testIntersect($input, $intersect, $expect): void
+    {
+        $this->assertEquals($expect, Collection::from($input)->intersect(...$intersect)->toArray());
+    }
+
+    public function provideIntersect()
+    {
+        return [
+            [
+                [1, 2, 3],
+                [
+                    [1, 2]
+                ],
+                [1, 2],
+            ],
+            [
+                [1, 2, 3],
+                [
+                    [1],
+                    [3],
+                ],
+                [1, 3],
+            ],
+        ];
     }
 }

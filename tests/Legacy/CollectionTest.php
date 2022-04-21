@@ -10,20 +10,6 @@ use function DusanKasan\Knapsack\concat;
 
 final class CollectionTest extends ObjectBehavior
 {
-    public function it_can_get_the_difference_between_collections(): void
-    {
-        $this->beConstructedWith([1, 2, 3, 4]);
-        $this->diff([1, 2])->toArray()->shouldReturn([2 => 3, 3 => 4]);
-        $this->diff([1, 2], [3])->toArray()->shouldReturn([3 => 4]);
-    }
-
-    public function it_can_get_the_intersect_of_collections(): void
-    {
-        $this->beConstructedWith([1, 2, 3]);
-        $this->intersect([1, 2])->values()->toArray()->shouldReturn([1, 2]);
-        $this->intersect([1], [3])->values()->toArray()->shouldReturn([1, 3]);
-    }
-
     public function it_can_group_by(): void
     {
         $this->beConstructedWith([1, 2, 3, 4, 5]);
