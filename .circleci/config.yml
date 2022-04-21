@@ -7,6 +7,10 @@ orbs:
   php-coveralls: nekman/php-coveralls@2
 
 executors:
+  php80:
+    docker:
+      - image: php:8.0-alpine
+    resource_class: small
   php81:
     docker:
       - image: php:8.1-alpine
@@ -14,7 +18,7 @@ executors:
 
 jobs:
   test_coverage:
-    executor: php81
+    executor: php80
     environment:
       CLOVER_PATH: coverage/clover.xml
     steps:
@@ -39,7 +43,7 @@ workflows:
   master:
     jobs:
       - php-cs-fixer/fix:
-          executor: php81
+          executor: php80
           rules: "@PSR2"
           path: .
           pre-steps:
@@ -49,3 +53,10 @@ workflows:
             branches:
               ignore: master
       - test_coverage
+      - phpunit/test:
+          test-path: tests
+          matrix:
+            parameters:
+              executor:
+                - php81
+          pre-steps: [ composer/install_bin ]
