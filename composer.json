@@ -46,6 +46,6 @@
         "lint": "php-cs-fixer fix --rules=@PSR2 ."
     },
     "replace": {
-        "dusank/knapsack": "^10.0"
+        "dusank/knapsack": "10.*"
     }
 }
