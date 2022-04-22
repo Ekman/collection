@@ -467,6 +467,11 @@ class Collection implements CollectionInterface
         return new self(iterable_take_while($this->it, $takeWhile));
     }
 
+    public function toArrayRecursive(bool $onlyValues = false): array
+    {
+        return iterable_to_array_recursive($this->it, $onlyValues);
+    }
+
     public function transform(callable $transform): self
     {
         $newTransform = fn (iterable $item) => $transform($item instanceof CollectionInterface ? $item : new Collection($item));

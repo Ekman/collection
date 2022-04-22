@@ -86,9 +86,8 @@ function iterable_cycle(iterable $it): iterable
 function iterable_diff(iterable $it, iterable ...$its): iterable
 {
     $valuesToCompare = iterable_to_array(
-        iterable_values(
-            iterable_concat(...$its)
-        )
+        iterable_concat(...$its),
+        true
     );
 
     foreach ($it as $key => $value) {
@@ -230,7 +229,7 @@ function iterable_index_by(iterable $it, callable $indexBy): iterable
 
 function iterable_except(iterable $it, iterable $keys): iterable
 {
-    $keys = iterable_to_array(iterable_values($keys));
+    $keys = iterable_to_array($keys, true);
 
     return iterable_reject(
         $it,
@@ -380,6 +379,25 @@ function iterable_to_array(iterable $it, bool $onlyValues = false): array
     );
 }
 
+function iterable_to_array_recursive(iterable $it, bool $onlyValues = false): array
+{
+    if ($onlyValues) {
+        $it = iterable_values($it);
+    }
+
+    $array = [];
+
+    foreach ($it as $key => $value) {
+        if (is_iterable($value)) {
+            $value = iterable_to_array_recursive($value, $onlyValues);
+        }
+
+        $array[$key]  = $value;
+    }
+
+    return $array;
+}
+
 function iterable_realize(iterable $it): iterable
 {
     return iterable_to_array($it);
@@ -423,7 +441,7 @@ function iterable_mapcat(iterable $it, callable $mapcat): iterable
 
 function iterable_only(iterable $it, iterable $keys): iterable
 {
-    $keys = iterable_to_array(iterable_values($keys));
+    $keys = iterable_to_array($keys, true);
 
     return iterable_filter(
         $it,
@@ -539,7 +557,7 @@ function iterable_interpose(iterable $it, mixed $separator): iterable
 
 function iterable_intersect(iterable $it, iterable ...$its): iterable
 {
-    $valuesToCompare = iterable_to_array(iterable_values(iterable_concat(...$its)));
+    $valuesToCompare = iterable_to_array(iterable_concat(...$its), true);
 
     foreach ($it as $key => $value) {
         if (in_array($value, $valuesToCompare)) {
@@ -690,9 +708,8 @@ function iterable_join(iterable $it, string $separator = ""): string
 function iterable_sort(iterable $it, callable $sort): iterable
 {
     $array = iterable_to_array(
-        iterable_values(
-            iterable_reference_key_value($it)
-        )
+        iterable_reference_key_value($it),
+        true
     );
 
     uasort(
@@ -916,9 +933,8 @@ function iterable_second(iterable $it): mixed
 function iterable_shuffle(iterable $it): iterable
 {
     $buffer = iterable_to_array(
-        iterable_values(
-            iterable_reference_key_value($it)
-        )
+        iterable_reference_key_value($it),
+        true
     );
 
     shuffle($buffer);

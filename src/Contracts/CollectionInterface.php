@@ -659,6 +659,14 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function toArray(bool $onlyValues = false): array;
 
     /**
+     * Converts collection and all children to array. If there are multiple items with the same key, only the last will be preserved.
+     *
+     * @param bool $onlyValues Shortcut for doing values()->toArrayRecursive()
+     * @return array
+     */
+    public function toArrayRecursive(bool $onlyValues = false): array;
+
+    /**
      * Returns a string by concatenating the collection values into a string.
      *
      * @return string
