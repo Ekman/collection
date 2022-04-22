@@ -187,7 +187,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function filter(?callable $filter = null): self;
 
     /**
-     * Returns first value matched by $function. If no value matches, return $default. If $convertToCollection is true
+     * Returns first value matched by $function. If no value matches, return $default. If $convertToIterable is true
      * and the return value is a collection (array|Traversable) an instance of Collection will be returned.
      *
      * @param callable $find
@@ -198,7 +198,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function find(callable $find, mixed $default = null, bool $convertToIterable = false): mixed;
 
     /**
-     * Returns first item of this collection. If the collection is empty, throws ItemNotFound. If $convertToCollection
+     * Returns first item of this collection. If the collection is empty, throws ItemNotFound. If $convertToIterable
      * is true and the return value is a collection (array|Traversable) an instance of Collection is returned.
      *
      * @param bool $convertToIterable
@@ -233,7 +233,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
 
     /**
      * Returns value at the key $key. If multiple values have this key, return first. If no value has this key, throw
-     * ItemNotFound. If $convertToCollection is true and the return value is a collection (array|Traversable) an
+     * ItemNotFound. If $convertToIterable is true and the return value is a collection (array|Traversable) an
      * instance of Collection will be returned.
      *
      * @param mixed $key
@@ -245,7 +245,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
 
     /**
      * Returns item at the key $key. If multiple items have this key, return first. If no item has this key, return
-     * $ifNotFound. If no value has this key, throw ItemNotFound. If $convertToCollection is true and the return value
+     * $ifNotFound. If no value has this key, throw ItemNotFound. If $convertToIterable is true and the return value
      * is a collection (array|Traversable) an instance of Collection will be returned.
      *
      * @param mixed $key
@@ -345,7 +345,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function keys(): self;
 
     /**
-     * Returns last item of this collection. If the collection is empty, throws ItemNotFound. If $convertToCollection
+     * Returns last item of this collection. If the collection is empty, throws ItemNotFound. If $convertToIterable
      * is true and the return value is a collection (array|Traversable) it is converted to Collection.
      *
      * @param bool $convertToIterable
@@ -446,7 +446,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      * Reduces the collection to single value by iterating over the collection and calling $function while
      * passing $startValue and current key/item as parameters. The output of $function is used as $startValue in
      * next iteration. The output of $function on last element is the return value of this function. If
-     * $convertToCollection is true and the return value is a collection (array|Traversable) an instance of Collection
+     * $convertToIterable is true and the return value is a collection (array|Traversable) an instance of Collection
      * is returned.
      *
      * @param callable $reduce ($tmpValue, $value, $key)
@@ -457,7 +457,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function reduce(callable $reduce, mixed $startValue, bool $convertToIterable = false): mixed;
 
     /**
-     * Reduce the collection to single value. Walks from right to left. If $convertToCollection is true and the return
+     * Reduce the collection to single value. Walks from right to left. If $convertToIterable is true and the return
      * value is a collection (array|Traversable) an instance of Collection is returned.
      *
      * @param callable $reduceRight Must take 2 arguments, intermediate value and item from the iterator.
@@ -518,7 +518,7 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
 
     /**
      * Returns the second item in this collection or throws ItemNotFound if the collection is empty or has 1 item. If
-     * $convertToCollection is true and the return value is a collection (array|Traversable) it is converted to
+     * $convertToIterable is true and the return value is a collection (array|Traversable) it is converted to
      * Collection.
      *
      * @param bool $convertToIterable

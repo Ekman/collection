@@ -734,7 +734,7 @@ final class FunctionsTest extends TestCase
                 [1, [2], 3],
                 1,
                 true,
-                [[2]],
+                [2],
             ],
             [
                 [1, [2], 3],
@@ -1168,7 +1168,7 @@ final class FunctionsTest extends TestCase
                 },
                 ["a" => [1]],
                 true,
-                [[1], 1, 3, 3, 0, 2],
+                ["a" => [1], 0 => 1, 1 => 3, 2 => 3, 3 => 2],
             ],
             [
                 [1, 3, 3, 2],
@@ -1754,7 +1754,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideAppend */
     public function testAppend($input, $append, $key, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->append($append, $key)->toArray(true));
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->append($append, $key)->toArray()
+        );
     }
 
     /** @dataProvider provideAverage */
@@ -1893,7 +1896,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideFlatten */
     public function testFlatten($input, $depth, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->flatten($depth)->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->flatten($depth)->toArray(true)
+        );
     }
 
     /** @dataProvider provideFlip */
@@ -2145,9 +2151,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideReduce */
-    public function testReduce($input, $reduce, $startValue, $convertToCollection, $expected): void
+    public function testReduce($input, $reduce, $startValue, $convertToIterable, $expected): void
     {
-        $result = Collection::from($input)->reduce($reduce, $startValue, $convertToCollection);
+        $result = Collection::from($input)->reduce($reduce, $startValue, $convertToIterable);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
