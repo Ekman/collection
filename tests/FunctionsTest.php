@@ -852,7 +852,7 @@ final class FunctionsTest extends TestCase
             [
                 ["a" => 1, "b" => 2],
                 "x",
-                true,
+                false,
             ],
         ];
     }
@@ -1967,7 +1967,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideHas */
     public function testHas($input, $has, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->has($has));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->has($has)
+        );
     }
 
     /** @dataProvider provideIndexBy */
