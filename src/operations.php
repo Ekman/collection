@@ -4,6 +4,7 @@ namespace Nekman\Collection;
 
 use Iterator;
 use IteratorIterator;
+use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Nekman\Collection\Exceptions\InvalidReturnValue;
 use Nekman\Collection\Exceptions\ItemNotFound;

@@ -622,11 +622,6 @@ final class FunctionsTest extends TestCase
                 false,
                 1,
             ],
-            [
-                [1, [2], 3],
-                true,
-                [1],
-            ],
         ];
     }
 
@@ -958,11 +953,6 @@ final class FunctionsTest extends TestCase
                 [1, [2], 3],
                 false,
                 3,
-            ],
-            [
-                [1, [2], 3],
-                true,
-                [3],
             ],
         ];
     }
