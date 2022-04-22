@@ -72,11 +72,11 @@ function iterable_contains(iterable $it, mixed $needle): bool
     return false;
 }
 
-function iterable_count_by(iterable $it, callable $countBy): iterable
+function iterable_count_by(iterable $its, callable $countBy): iterable
 {
     return iterable_map(
-        iterable_group_by($it, $countBy),
-        "iterable_size"
+        iterable_group_by($its, $countBy),
+        fn (iterable $it) => iterable_size($it)
     );
 }
 
@@ -521,19 +521,22 @@ function iterable_has(iterable $it, mixed $key): bool
 
 function iterable_frequencies(iterable $it): iterable
 {
-    return iterable_count_by($it, '\Nekman\Collection\identity');
+    return iterable_count_by($it, fn ($value) => identity($value));
 }
 
 function iterable_interleave(iterable ...$its): iterable
 {
     /* @var Iterator[] $iterators */
-    $iterators = iterable_map(
-        $its,
-        function (iterable $it) {
-            $it = new IteratorIterator(iterable_to_traversable($it));
-            $it->rewind();
-            return $it;
-        }
+    $iterators = iterable_to_array(
+        iterable_map(
+            $its,
+            function (iterable $it) {
+                $it = new IteratorIterator(iterable_to_traversable($it));
+                $it->rewind();
+                return $it;
+            }
+        ),
+        true
     );
 
     $valid = false;

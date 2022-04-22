@@ -1800,43 +1800,64 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideConcat */
     public function testConcat($input, $concat, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->concat(...$concat)->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->concat(...$concat)->toArray()
+        );
     }
 
     /** @dataProvider provideContains */
     public function testContains($input, $contains, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->contains($contains));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->contains($contains)
+        );
     }
 
     /** @dataProvider provideCountBy */
     public function testCountBy($input, $countBy, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->countBy($countBy));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->countBy($countBy)->toArray(),
+        );
     }
 
     /** @dataProvider provideCycle */
     public function testCycle($input, $take, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->cycle()->take($take)->toArray(true));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->cycle()->take($take)->toArray(true)
+        );
     }
 
     /** @dataProvider provideDereferenceKeyValue */
     public function testDereferenceKeyValue($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->dereferenceKeyValue()->toArray(true));
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->dereferenceKeyValue()->toArray(true)
+        );
     }
 
     /** @dataProvider provideDiff */
     public function testDiff($input, $diff, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->diff(...$diff)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->diff(...$diff)->toArray()
+        );
     }
 
     /** @dataProvider provideDistinct */
     public function testDistinct($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->distinct()->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->distinct()->toArray()
+        );
     }
 
     /** @dataProvider provideDrop */

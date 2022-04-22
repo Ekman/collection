@@ -254,7 +254,7 @@ class Collection implements CollectionInterface
 
     public function interleave(iterable ...$its): self
     {
-        return new self(iterable_interleave([$this->it, ...$its]));
+        return new self(iterable_interleave($this->it, ...$its));
     }
 
     public function interpose(mixed $separator): self
