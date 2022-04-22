@@ -232,12 +232,14 @@ class Collection implements CollectionInterface
 
     public function groupBy(callable $groupBy): self
     {
-        return new self(iterable_group_by($this->it, $groupBy));
+        $result = iterable_group_by($this->it, $groupBy);
+        return new self(iterable_map($result, fn (iterable $it) => new self($it)));
     }
 
     public function groupByKey(mixed $key): self
     {
-        return new self(iterable_group_by_key($this->it, $key));
+        $result = iterable_group_by_key($this->it, $key);
+        return new self(iterable_map($result, fn (iterable $it) => new self($it)));
     }
 
     public function has(mixed $key): bool
@@ -341,7 +343,7 @@ class Collection implements CollectionInterface
 
     public function printDump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): CollectionInterface
     {
-        return print_dump($this->it, $maxItemsPerCollection, $maxDepth);
+        return new self(print_dump($this->it, $maxItemsPerCollection, $maxDepth));
     }
 
     public function realize(): self
@@ -481,7 +483,8 @@ class Collection implements CollectionInterface
 
     public function transpose(iterable ...$its): self
     {
-        return new self(iterable_transpose($this->it, ...$its));
+        $result = iterable_transpose($this->it, ...$its);
+        return new self(iterable_map($result, fn (iterable $it) => new self($it)));
     }
 
     public function values(): self

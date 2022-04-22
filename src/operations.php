@@ -55,7 +55,9 @@ function iterable_combine(iterable $keys, iterable $values): iterable
 function iterable_concat(iterable ...$its): iterable
 {
     foreach ($its as $it) {
-        yield from $it;
+        foreach ($it as $key => $value) {
+            yield $key => $value;
+        }
     }
 }
 
@@ -171,7 +173,13 @@ function iterable_extract(iterable $it, string $keyPath): iterable
 
     $extractor = function ($coll) use ($pathParts) {
         foreach ($pathParts as $pathPart) {
-            $coll = iterable_flatten(iterable_filter($coll, 'is_iterable'), 1);
+            $coll = iterable_flatten(
+                iterable_filter(
+                    $coll,
+                    fn ($value) => is_iterable($value),
+                ),
+                1
+            );
 
             if ($pathPart != '*') {
                 $pathPart = str_replace(['\.', '\*'], ['.', '*'], $pathPart);
@@ -192,7 +200,7 @@ function iterable_extract(iterable $it, string $keyPath): iterable
 function iterable_filter(iterable $it, ?callable $filter = null): iterable
 {
     if (!$filter) {
-        $filter = "boolval";
+        $filter = fn ($value) => boolval($value);
     }
 
     foreach ($it as $key => $value) {
@@ -745,7 +753,7 @@ function iterable_to_string(iterable $it): string
 {
     return iterable_reduce(
         $it,
-        fn (string $sum, string $value) => $sum . $value,
+        fn (string $sum, ?string $value) => $sum . $value,
         ""
     );
 }
@@ -753,13 +761,16 @@ function iterable_to_string(iterable $it): string
 function iterable_zip(iterable ...$its): iterable
 {
     /* @var Iterator[] $iterators */
-    $iterators = iterable_map(
-        $its,
-        function ($it) {
-            $it = new IteratorIterator(iterable_to_traversable($it));
-            $it->rewind();
-            return $it;
-        }
+    $iterators = iterable_to_array(
+        iterable_map(
+            $its,
+            function (iterable $it) {
+                $it = new IteratorIterator(iterable_to_traversable($it));
+                $it->rewind();
+                return $it;
+            }
+        ),
+        true
     );
 
     while (true) {
@@ -801,9 +812,14 @@ function iterable_transpose(iterable ...$its): iterable
         throw new InvalidArgument('Can only transpose iterable of iterables.');
     }
 
-    return iterable_map(
-        $its,
-        'Nekman\Collection\iterable_to_array'
+    return array_map(
+        fn (...$items) => $items,
+        ...iterable_to_array(
+            iterable_map(
+                $its,
+                fn (iterable $it) => iterable_to_array($it)
+            )
+        )
     );
 }
 
