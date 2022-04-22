@@ -210,7 +210,7 @@ function iterable_filter(iterable $it, ?callable $filter = null): iterable
     }
 }
 
-function iterable_find(iterable $it, callable $find, mixed $default = nulle): mixed
+function iterable_find(iterable $it, callable $find, mixed $default = null): mixed
 {
     foreach ($it as $key => $value) {
         if ($find($value, $key)) {
@@ -221,10 +221,10 @@ function iterable_find(iterable $it, callable $find, mixed $default = nulle): mi
     return $default;
 }
 
-function iterable_first(iterable $it, bool $convertToIterable = false): mixed
+function iterable_first(iterable $it): mixed
 {
     foreach ($it as $value) {
-        return $convertToIterable ? [$value] : $value;
+        return $value;
     }
 
     throw new ItemNotFound;
@@ -596,7 +596,7 @@ function iterable_is_not_empty(iterable $it): bool
     return !iterable_is_empty($it);
 }
 
-function iterable_last(iterable $it, bool $convertToIterable = false): mixed
+function iterable_last(iterable $it): mixed
 {
     foreach ($it as $value) {
         $last = $value;
@@ -606,7 +606,7 @@ function iterable_last(iterable $it, bool $convertToIterable = false): mixed
         throw new ItemNotFound;
     }
 
-    return $convertToIterable ? [$last] : $last;
+    return $last;
 }
 
 function iterable_max(iterable $it): mixed

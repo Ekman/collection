@@ -180,17 +180,17 @@ class Collection implements CollectionInterface
         return new self(iterable_filter($this->it, $filter));
     }
 
-    public function find(callable $find, mixed $default = null, bool $convertToIterable = false): mixed
+    public function find(callable $find, mixed $default = null, bool $convertToCollection = false): mixed
     {
         $result = iterable_find($this->it, $find, $default);
 
         return $result && is_iterable($result) ? new self($result) : $result;
     }
 
-    public function first(bool $convertToIterable = false): mixed
+    public function first(bool $convertToCollection = false): mixed
     {
-        $first = iterable_first($this->it, $convertToIterable);
-        return $convertToIterable ? new self($first) : $first;
+        $first = iterable_first($this->it);
+        return $convertToCollection && is_iterable($first) ? new self($first) : $first;
     }
 
     public function flatten(int $levelsToFlatten = -1): self
@@ -208,10 +208,10 @@ class Collection implements CollectionInterface
         return new self(iterable_frequencies($this->it));
     }
 
-    public function get(mixed $key, bool $convertToIterable = false): mixed
+    public function get(mixed $key, bool $convertToCollection = false): mixed
     {
         $get = iterable_get($this->it, $key);
-        return $convertToIterable && is_iterable($get) ? new self($get) : $get;
+        return $convertToCollection && is_iterable($get) ? new self($get) : $get;
     }
 
     final public function getIterator(): Traversable
@@ -224,10 +224,10 @@ class Collection implements CollectionInterface
         return iterable_to_traversable($this->it);
     }
 
-    public function getOrDefault(mixed $key, mixed $default = null, bool $convertToIterable = false): mixed
+    public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): mixed
     {
         $getOrDefault = iterable_get_or_default($this->it, $key, $default);
-        return $convertToIterable && is_iterable($getOrDefault) ? new self($getOrDefault) : $getOrDefault;
+        return $convertToCollection && is_iterable($getOrDefault) ? new self($getOrDefault) : $getOrDefault;
     }
 
     public function groupBy(callable $groupBy): self
@@ -292,10 +292,10 @@ class Collection implements CollectionInterface
         return new self(iterable_keys($this->it));
     }
 
-    public function last(bool $convertToIterable = false): mixed
+    public function last(bool $convertToCollection = false): mixed
     {
-        $last = iterable_last($this->it, $convertToIterable);
-        return $convertToIterable ? new self($last) : $last;
+        $last = iterable_last($this->it);
+        return $convertToCollection && is_iterable($last) ? new self($last) : $last;
     }
 
     public function map(callable $map): self
@@ -351,16 +351,16 @@ class Collection implements CollectionInterface
         return new self(iterable_realize($this->it));
     }
 
-    public function reduce(callable $reduce, mixed $startValue, bool $convertToIterable = false): mixed
+    public function reduce(callable $reduce, mixed $startValue, bool $convertToCollection = false): mixed
     {
         $reduce = iterable_reduce($this->it, $reduce, $startValue);
-        return $convertToIterable && is_iterable($reduce) ? new self($reduce) : $reduce;
+        return $convertToCollection && is_iterable($reduce) ? new self($reduce) : $reduce;
     }
 
-    public function reduceRight(callable $reduceRight, mixed $startValue, bool $convertToIterable = false): mixed
+    public function reduceRight(callable $reduceRight, mixed $startValue, bool $convertToCollection = false): mixed
     {
         $reduceRight = iterable_reduce_right($this->it, $reduceRight, $startValue);
-        return $convertToIterable && is_iterable($reduceRight) ? new self($reduceRight) : $reduceRight;
+        return $convertToCollection && is_iterable($reduceRight) ? new self($reduceRight) : $reduceRight;
     }
 
     public function reductions(callable $reductions, mixed $startValue): self
@@ -393,7 +393,7 @@ class Collection implements CollectionInterface
         return new self(iterable_reverse($this->it));
     }
 
-    public function second(bool $convertToIterable = false): mixed
+    public function second(bool $convertToCollection = false): mixed
     {
         $second = iterable_second($this->it);
         return $second && is_iterable($second) ? new self($second) : $second;
