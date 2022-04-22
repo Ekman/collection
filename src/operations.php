@@ -732,7 +732,16 @@ function iterable_sort(iterable $it, callable $sort): iterable
 
     uasort(
         $array,
-        fn ($a, $b) => $sort($a[1], $b[1], $a[0], $b[0])
+        function ($a, $b) use ($sort) {
+            $compare = $sort($a[1], $b[1], $a[0], $b[0]);
+
+            // We do this to silence deprecated warning
+            if (is_bool($compare)) {
+                return $compare ? 1 : -1;
+            }
+
+            return $compare;
+        }
     );
 
     return iterable_dereference_key_value($array);

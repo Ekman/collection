@@ -4,6 +4,7 @@ namespace Nekman\Collection\Tests\Scenarios;
 
 use Nekman\Collection\Collection;
 use PHPUnit\Framework\TestCase;
+use function Nekman\Collection\compare;
 
 final class CallableFunctionNamesTest extends TestCase
 {
@@ -11,7 +12,7 @@ final class CallableFunctionNamesTest extends TestCase
     {
         $result = Collection::from([2, 1])
             ->concat([3, 4])
-            ->sort("\\Nekman\\Collection\\compare")
+            ->sort(fn ($a, $b) => compare($a, $b))
             ->values()
             ->toArray();
 
