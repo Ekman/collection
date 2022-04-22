@@ -1099,7 +1099,7 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 1,
                 null,
-                [4 => 1, 0 => 1, 1 => 3, 2 => 3, 3 => 2],
+                [0 => 1, 1 => 3, 2 => 3, 3 => 2],
             ],
             [
                 [1, 3, 3, 2],
@@ -1168,7 +1168,7 @@ final class FunctionsTest extends TestCase
                 },
                 ["a" => [1]],
                 true,
-                [[1], 1, 3, 3, 2],
+                [[1], 1, 3, 3, 0, 2],
             ],
             [
                 [1, 3, 3, 2],
@@ -1208,12 +1208,6 @@ final class FunctionsTest extends TestCase
                 fn ($temp, $key, $item) => $temp + $key + $item,
                 0,
                 15,
-            ],
-            [
-                [1, 3, 3, 2],
-                fn (CollectionInterface $temp, $item) => $temp->append($item),
-                new Collection(),
-                new Collection(fn () => yield from [2, 3, 3, 1]),
             ],
         ];
     }
@@ -2099,7 +2093,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider providePartition */
     public function testPartition($input, $nItems, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->partition($nItems)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->partition($nItems)->toArrayRecursive()
+        );
     }
 
     /** @dataProvider providePartitionBy */
@@ -2111,7 +2108,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider providePrepend */
     public function testPrepend($input, $prepend, $key, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->prepend($prepend, $key)->toArray(true));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->prepend($prepend, $key)->toArray()
+        );
     }
 
     /** @dataProvider providePrintDump */

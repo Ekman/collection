@@ -13,7 +13,9 @@ use function shuffle;
 
 function iterable_append(iterable $it, mixed $value, mixed $key = null): iterable
 {
-    yield from $it;
+    foreach ($it as $k => $v) {
+        yield $k => $v;
+    }
 
     if ($key === null) {
         yield $value;
@@ -392,7 +394,7 @@ function iterable_to_array_recursive(iterable $it, bool $onlyValues = false): ar
             $value = iterable_to_array_recursive($value, $onlyValues);
         }
 
-        $array[$key]  = $value;
+        $array[$key] = $value;
     }
 
     return $array;
@@ -672,7 +674,9 @@ function iterable_prepend(iterable $it, mixed $value, mixed $key = null): iterab
         yield $value;
     }
 
-    yield from $it;
+    foreach ($it as $k => $v) {
+        yield $k => $v;
+    }
 }
 
 function iterable_reduce_right(iterable $it, callable $reduceRight, mixed $startValue): mixed
@@ -682,7 +686,15 @@ function iterable_reduce_right(iterable $it, callable $reduceRight, mixed $start
 
 function iterable_reverse(iterable $it): iterable
 {
-    return array_reverse(iterable_to_array($it), true);
+    $array = iterable_to_array(iterable_reference_key_value($it));
+
+    return iterable_map(
+        iterable_index_by(
+            array_reverse($array),
+            fn ($item) => $item[0],
+        ),
+        fn ($item) => $item[1],
+    );
 }
 
 function iterable_reductions(iterable $it, callable $reductions, mixed $startValue): iterable
