@@ -1526,16 +1526,16 @@ final class FunctionsTest extends TestCase
             [
                 [1, 3, 2],
                 fn ($a, $b) => compare($a, $b),
-                [1, 2, 3],
+                [0 => 1, 1 => 3, 2 => 2],
             ],
             [
                 [3, 1, 2],
-                fn ($a, $b) => $a > $b,
+                fn ($a, $b) => $a > $b ? 1 : -1,
                 [1 => 1, 2 => 2, 0 => 3],
             ],
             [
                 [3, 1, 2],
-                fn ($v1, $v2, $k1, $k2) => $k1 < $k2 || $v1 == $v2,
+                fn ($v1, $v2, $k1, $k2) => $k1 < $k2 || $v1 == $v2 ? 1 : -1,
                 [2 => 2, 1 => 1, 0 => 3],
             ],
         ];
@@ -2298,11 +2298,9 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideSort */
     public function testSort($input, $sort, $expected): void
     {
-        $this->markTestSkipped();
-
         $this->assertEquals(
             $expected,
-            Collection::from($input)->sort($sort)->toArray(true)
+            Collection::from($input)->sort($sort)->toArray()
         );
     }
 
