@@ -210,8 +210,8 @@ class Collection implements CollectionInterface
 
     public function get(mixed $key, bool $convertToIterable = false): mixed
     {
-        $get = iterable_get($this->it, $key, $convertToIterable);
-        return $convertToIterable ? new self($get) : $get;
+        $get = iterable_get($this->it, $key);
+        return $convertToIterable && is_iterable($get) ? new self($get) : $get;
     }
 
     final public function getIterator(): Traversable
@@ -226,8 +226,8 @@ class Collection implements CollectionInterface
 
     public function getOrDefault(mixed $key, mixed $default = null, bool $convertToIterable = false): mixed
     {
-        $getOrDefault = iterable_get_or_default($this->it, $key, $convertToIterable);
-        return $convertToIterable ? new self($getOrDefault) : $getOrDefault;
+        $getOrDefault = iterable_get_or_default($this->it, $key, $default);
+        return $convertToIterable && is_iterable($getOrDefault) ? new self($getOrDefault) : $getOrDefault;
     }
 
     public function groupBy(callable $groupBy): self
@@ -262,7 +262,7 @@ class Collection implements CollectionInterface
 
     public function intersect(iterable ...$its): self
     {
-        return new self(iterable_intersect($this->it, $its));
+        return new self(iterable_intersect($this->it, ...$its));
     }
 
     public function isEmpty(): bool

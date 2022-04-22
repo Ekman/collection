@@ -225,7 +225,7 @@ function iterable_first(iterable $it, bool $convertToIterable = false): mixed
 function iterable_index_by(iterable $it, callable $indexBy): iterable
 {
     foreach ($it as $key => $value) {
-        yield $indexBy($key, $value) => $value;
+        yield $indexBy($value, $key) => $value;
     }
 }
 
@@ -458,21 +458,21 @@ function iterable_flip(iterable $it): iterable
     }
 }
 
-function iterable_get(iterable $it, mixed $key, bool $convertToIterable = false): mixed
+function iterable_get(iterable $it, mixed $key): mixed
 {
-    foreach ($it as $itKey => $value) {
-        if ($itKey === $key) {
-            return $convertToIterable ? [$value] : $value;
+    foreach ($it as $valueKey => $value) {
+        if ($valueKey === $key) {
+            return $value;
         }
     }
 
     throw new ItemNotFound;
 }
 
-function iterable_get_or_default(iterable $it, mixed $key, mixed $default = null, bool $convertToIterable = false): mixed
+function iterable_get_or_default(iterable $it, mixed $key, mixed $default = null): mixed
 {
     try {
-        return iterable_get($it, $key, $convertToIterable);
+        return iterable_get($it, $key);
     } catch (ItemNotFound) {
         return $default;
     }
@@ -559,7 +559,10 @@ function iterable_interpose(iterable $it, mixed $separator): iterable
 
 function iterable_intersect(iterable $it, iterable ...$its): iterable
 {
-    $valuesToCompare = iterable_to_array(iterable_concat(...$its), true);
+    $valuesToCompare = iterable_to_array(
+        iterable_concat(...$its),
+        true
+    );
 
     foreach ($it as $key => $value) {
         if (in_array($value, $valuesToCompare)) {
@@ -597,24 +600,24 @@ function iterable_last(iterable $it, bool $convertToIterable = false): mixed
 
 function iterable_max(iterable $it): mixed
 {
-    $max = null;
+    $max = PHP_INT_MIN;
 
     foreach ($it as $value) {
         $max = max($value, $max);
     }
 
-    return $max;
+    return $max === PHP_INT_MIN ? null : $max;
 }
 
 function iterable_min(iterable $it): mixed
 {
-    $min = null;
+    $min = PHP_INT_MAX;
 
     foreach ($it as $value) {
         $min = min($value, $min);
     }
 
-    return $min;
+    return $min === PHP_INT_MAX ? null : $min;
 }
 
 function iterable_partition(iterable $it, int $nItems, int $step = 0, iterable $padding = []): iterable
@@ -686,15 +689,7 @@ function iterable_reduce_right(iterable $it, callable $reduceRight, mixed $start
 
 function iterable_reverse(iterable $it): iterable
 {
-    $array = iterable_to_array(iterable_reference_key_value($it));
-
-    return iterable_map(
-        iterable_index_by(
-            array_reverse($array),
-            fn ($item) => $item[0],
-        ),
-        fn ($item) => $item[1],
-    );
+    return array_reverse(iterable_to_array($it), true);
 }
 
 function iterable_reductions(iterable $it, callable $reductions, mixed $startValue): iterable

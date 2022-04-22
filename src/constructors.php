@@ -6,15 +6,20 @@ use Nekman\Collection\Exceptions\NoMoreItems;
 
 function iterable_iterate(mixed $value, callable $iterate): iterable
 {
-    $value = duplicate($value);
+    $duplicated = duplicate($value);
 
-    do {
+    $value = $duplicated;
+
+    yield $value;
+
+    while (true) {
         try {
-            yield $value = $iterate($value);
-        } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems) {
+            $value = $iterate($value);
+            yield $value;
+        } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems $e) {
             break;
         }
-    } while (true);
+    }
 }
 
 function iterable_repeat(mixed $startValue, int $nItems = -1): iterable

@@ -38,8 +38,9 @@ final class GroupingFlightsTest extends TestCase
 
         $result = $collection
             ->groupBy(fn ($v) => $v["dest"])
-            ->map([$this, "summarize"])
-            ->map([$this, "buildResults"])
+            ->map(fn ($v) => Collection::from($v))
+            ->map(fn ($v) => $this->summarize($v))
+            ->map(fn ($v) => $this->buildResults($v))
             ->toArray();
 
         $expected = [

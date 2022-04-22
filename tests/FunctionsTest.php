@@ -715,7 +715,7 @@ final class FunctionsTest extends TestCase
     {
         return [
             [
-                1,
+                fn () => 1,
                 InvalidArgument::class,
             ],
         ];
@@ -760,7 +760,7 @@ final class FunctionsTest extends TestCase
                 1,
                 null,
                 true,
-                [[2]],
+                [2],
             ],
             [
                 [1, [2], 3],
@@ -1019,7 +1019,7 @@ final class FunctionsTest extends TestCase
     {
         return [
             [
-                [1, 3, 3, 2],
+                [2, 1, 3, 2],
                 1,
             ],
             [
@@ -1973,7 +1973,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideIndexBy */
     public function testIndexBy($input, $indexBy, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->indexBy($indexBy)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->indexBy($indexBy)->toArray()
+        );
     }
 
     /** @dataProvider provideInterleave */
@@ -1991,7 +1994,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideIntersect */
     public function testIntersect($input, $intersect, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->intersect(...$intersect)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->intersect(...$intersect)->toArray(true)
+        );
     }
 
     /** @dataProvider provideIsEmpty */
@@ -2204,7 +2210,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideReverse */
     public function testReverse($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->reverse()->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->reverse()->toArray()
+        );
     }
 
     /** @dataProvider provideSecond */
