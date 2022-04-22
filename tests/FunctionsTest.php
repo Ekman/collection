@@ -6,6 +6,7 @@ use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Nekman\Collection\Collection;
+use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Nekman\Collection\Exceptions\InvalidReturnValue;
 use Nekman\Collection\Exceptions\ItemNotFound;
@@ -13,6 +14,7 @@ use Nekman\Collection\Exceptions\NoMoreItems;
 use Nekman\Collection\Tests\Helpers\Car;
 use PHPUnit\Framework\TestCase;
 use Traversable;
+use function Nekman\Collection\compare;
 use function Nekman\Collection\iterable_concat;
 use function Nekman\Collection\iterable_to_array;
 
@@ -620,11 +622,6 @@ final class FunctionsTest extends TestCase
                 false,
                 1,
             ],
-            [
-                [1, [2], 3],
-                true,
-                [1],
-            ],
         ];
     }
 
@@ -712,7 +709,7 @@ final class FunctionsTest extends TestCase
     {
         return [
             [
-                1,
+                fn () => 1,
                 InvalidArgument::class,
             ],
         ];
@@ -731,7 +728,7 @@ final class FunctionsTest extends TestCase
                 [1, [2], 3],
                 1,
                 true,
-                [[2]],
+                [2],
             ],
             [
                 [1, [2], 3],
@@ -757,7 +754,7 @@ final class FunctionsTest extends TestCase
                 1,
                 null,
                 true,
-                [[2]],
+                [2],
             ],
             [
                 [1, [2], 3],
@@ -830,9 +827,13 @@ final class FunctionsTest extends TestCase
                 ],
                 "type",
                 [
-                    ["letter" => "A", "type" => "caps"],
-                    ["letter" => "a", "type" => "small"],
-                    ["letter" => "B", "type" => "caps"],
+                    "caps" => [
+                        ["letter" => "A", "type" => "caps"],
+                        ["letter" => "B", "type" => "caps"],
+                    ],
+                    "small" => [
+                        ["letter" => "a", "type" => "small"],
+                    ],
                 ],
             ],
         ];
@@ -849,7 +850,7 @@ final class FunctionsTest extends TestCase
             [
                 ["a" => 1, "b" => 2],
                 "x",
-                true,
+                false,
             ],
         ];
     }
@@ -953,11 +954,6 @@ final class FunctionsTest extends TestCase
                 false,
                 3,
             ],
-            [
-                [1, [2], 3],
-                true,
-                [3],
-            ],
         ];
     }
 
@@ -1016,7 +1012,7 @@ final class FunctionsTest extends TestCase
     {
         return [
             [
-                [1, 3, 3, 2],
+                [2, 1, 3, 2],
                 1,
             ],
             [
@@ -1096,7 +1092,7 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 1,
                 null,
-                [4 => 1, 0 => 1, 1 => 3, 2 => 3, 3 => 2],
+                [0 => 1, 1 => 3, 2 => 3, 3 => 2],
             ],
             [
                 [1, 3, 3, 2],
@@ -1121,16 +1117,14 @@ final class FunctionsTest extends TestCase
         return [
             [
                 5,
-                6,
                 null,
-                4,
+                2,
                 [5, 6],
             ],
             [
                 5,
-                null,
-                null,
-                2,
+                6,
+                4,
                 [5, 6],
             ],
         ];
@@ -1165,7 +1159,7 @@ final class FunctionsTest extends TestCase
                 },
                 ["a" => [1]],
                 true,
-                [[1], 1, 3, 3, 2],
+                ["a" => [1], 0 => 1, 1 => 3, 2 => 3, 3 => 2],
             ],
             [
                 [1, 3, 3, 2],
@@ -1183,7 +1177,7 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [1, 3, 3, 2],
-                fn (Collection $temp, $item) => $temp->append($item),
+                fn (CollectionInterface $temp, $item) => $temp->append($item),
                 new Collection([]),
                 false,
                 [1, 3, 3, 2],
@@ -1205,12 +1199,6 @@ final class FunctionsTest extends TestCase
                 fn ($temp, $key, $item) => $temp + $key + $item,
                 0,
                 15,
-            ],
-            [
-                [1, 3, 3, 2],
-                fn (Collection $temp, $item) => $temp->append($item),
-                new Collection(),
-                new Collection([2, 3, 3, 1]),
             ],
         ];
     }
@@ -1492,7 +1480,7 @@ final class FunctionsTest extends TestCase
                 [1, 2, 3, 4, 5],
                 4,
                 -1,
-                [2 => 3, 3 => 4],
+                [4 => 5],
             ],
         ];
     }
@@ -1528,17 +1516,17 @@ final class FunctionsTest extends TestCase
         return [
             [
                 [1, 3, 2],
-                "\\Nekman\\Collection\\compare",
-                [1, 2, 3],
+                fn ($a, $b) => compare($a, $b),
+                [0 => 1, 1 => 3, 2 => 2],
             ],
             [
                 [3, 1, 2],
-                fn ($a, $b) => $a > $b,
+                fn ($a, $b) => $a > $b ? 1 : -1,
                 [1 => 1, 2 => 2, 0 => 3],
             ],
             [
                 [3, 1, 2],
-                fn ($v1, $v2, $k1, $k2) => $k1 < $k2 || $v1 == $v2,
+                fn ($v1, $v2, $k1, $k2) => $k1 < $k2 || $v1 == $v2 ? 1 : -1,
                 [2 => 2, 1 => 1, 0 => 3],
             ],
         ];
@@ -1663,23 +1651,23 @@ final class FunctionsTest extends TestCase
         ];
     }
 
-    public function provideTransformer(): array
+    public function provideTransform(): array
     {
         return [
             [
                 [1, 2, 3],
-                fn (Collection $it) => $it->map("\\Nekman\\Collection\\increment"),
+                fn (CollectionInterface $it) => $it->map("\\Nekman\\Collection\\increment"),
                 [2, 3, 4],
             ],
         ];
     }
 
-    public function provideTransformer_fail(): array
+    public function provideTransform_fail(): array
     {
         return [
             [
                 [1, 2, 3],
-                fn (Collection $it) => $it->first(),
+                fn (CollectionInterface $it) => $it->first(),
                 InvalidReturnValue::class,
             ],
         ];
@@ -1702,14 +1690,14 @@ final class FunctionsTest extends TestCase
             ],
             [
                 [
-                    new Collection([1, 2, 3]),
-                    new Collection([4, 5, new Collection(["foo", "bar"])]),
-                    new Collection([7, 8, 9]),
+                    [1, 2, 3],
+                    [4, 5, ["foo", "bar"]],
+                    [7, 8, 9],
                 ],
                 [
-                    new Collection([1, 4, 7]),
-                    new Collection([2, 5, 8]),
-                    new Collection([3, new Collection(["foo", "bar"]), 9]),
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [3, ["foo", "bar"], 9],
                 ],
             ],
         ];
@@ -1720,9 +1708,7 @@ final class FunctionsTest extends TestCase
         return [
             [
                 [
-                    [1, 2, 3],
-                    [4, 5, 6],
-                    [7, 8, 9],
+                    "a"
                 ],
                 InvalidArgument::class,
             ],
@@ -1744,20 +1730,47 @@ final class FunctionsTest extends TestCase
         return [
             [
                 [1, 2, 3],
-                [4, 5, 6],
+                [
+                    ['a' => 1, 'b' => 2, 'c' => 4],
+                ],
+                [
+                    [1, 'a' => 1],
+                    [1 => 2, 'b' => 2],
+                    [2 => 3, 'c' => 4],
+                ],
+            ],
+            [
+                [1, 2, 3],
+                [
+                    [4, 5, 6],
+                    [7, 8, 9],
+                ],
+                [
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [3, 6, 9],
+                ],
+            ],
+            [
+                [1, 2, 3],
+                [
+                    [4, 5]
+                ],
                 [
                     [1, 4],
                     [2, 5],
-                    [3, 6],
                 ],
-            ],
+            ]
         ];
     }
 
     /** @dataProvider provideAppend */
     public function testAppend($input, $append, $key, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->append($append, $key)->toArray(true));
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->append($append, $key)->toArray()
+        );
     }
 
     /** @dataProvider provideAverage */
@@ -1775,43 +1788,64 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideConcat */
     public function testConcat($input, $concat, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->concat(...$concat)->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->concat(...$concat)->toArray()
+        );
     }
 
     /** @dataProvider provideContains */
     public function testContains($input, $contains, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->contains($contains));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->contains($contains)
+        );
     }
 
     /** @dataProvider provideCountBy */
     public function testCountBy($input, $countBy, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->countBy($countBy));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->countBy($countBy)->toArray(),
+        );
     }
 
     /** @dataProvider provideCycle */
     public function testCycle($input, $take, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->cycle()->take($take)->toArray(true));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->cycle()->take($take)->toArray(true)
+        );
     }
 
     /** @dataProvider provideDereferenceKeyValue */
     public function testDereferenceKeyValue($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->dereferenceKeyValue()->toArray(true));
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->dereferenceKeyValue()->toArray(true)
+        );
     }
 
     /** @dataProvider provideDiff */
     public function testDiff($input, $diff, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->diff(...$diff)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->diff(...$diff)->toArray()
+        );
     }
 
     /** @dataProvider provideDistinct */
     public function testDistinct($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->distinct()->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->distinct()->toArray()
+        );
     }
 
     /** @dataProvider provideDrop */
@@ -1875,9 +1909,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideFirst */
-    public function testFirst($input, $convertToIterable, $expect): void
+    public function testFirst($input, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->first($convertToIterable);
+        $result = Collection::from($input)->first($convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -1896,25 +1930,37 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideFlatten */
     public function testFlatten($input, $depth, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->flatten($depth)->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->flatten($depth)->toArray(true)
+        );
     }
 
     /** @dataProvider provideFlip */
     public function testFlip($input, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->flip()->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->flip()->toArray()
+        );
     }
 
     /** @dataProvider provideFrequencies */
     public function testFrequencies($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->frequencies()->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->frequencies()->toArray()
+        );
     }
 
     /** @dataProvider provideFromAndCreate */
     public function testFrom($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->toArray(true));
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->toArray(true)
+        );
     }
 
     /** @dataProvider provideFromAndCreate_fail */
@@ -1925,9 +1971,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideGet */
-    public function testGet($input, $key, $convertToIterable, $expect): void
+    public function testGet($input, $key, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->get($key, $convertToIterable);
+        $result = Collection::from($input)->get($key, $convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -1937,9 +1983,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideGetOrDefault */
-    public function testGetOrDefault($input, $key, $default, $convertToIterable, $expect): void
+    public function testGetOrDefault($input, $key, $default, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->getOrDefault($key, $default, $convertToIterable);
+        $result = Collection::from($input)->getOrDefault($key, $default, $convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -1958,25 +2004,37 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideGroupBy */
     public function testGroupBy($input, $groupBy, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->groupBy($groupBy)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->groupBy($groupBy)->toArrayRecursive()
+        );
     }
 
     /** @dataProvider provideGroupByKey */
     public function testGroupByKey($input, $key, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->groupByKey($key)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->groupByKey($key)->toArrayRecursive()
+        );
     }
 
     /** @dataProvider provideHas */
     public function testHas($input, $has, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->has($has));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->has($has)
+        );
     }
 
     /** @dataProvider provideIndexBy */
     public function testIndexBy($input, $indexBy, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->indexBy($indexBy)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->indexBy($indexBy)->toArray()
+        );
     }
 
     /** @dataProvider provideInterleave */
@@ -1994,7 +2052,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideIntersect */
     public function testIntersect($input, $intersect, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->intersect(...$intersect)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->intersect(...$intersect)->toArray(true)
+        );
     }
 
     /** @dataProvider provideIsEmpty */
@@ -2032,9 +2093,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideLast */
-    public function testLast($input, $convertToIterable, $expect): void
+    public function testLast($input, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->last($convertToIterable);
+        $result = Collection::from($input)->last($convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -2096,7 +2157,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider providePartition */
     public function testPartition($input, $nItems, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->partition($nItems)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->partition($nItems)->toArrayRecursive()
+        );
     }
 
     /** @dataProvider providePartitionBy */
@@ -2108,7 +2172,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider providePrepend */
     public function testPrepend($input, $prepend, $key, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->prepend($prepend, $key)->toArray(true));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->prepend($prepend, $key)->toArray()
+        );
     }
 
     /** @dataProvider providePrintDump */
@@ -2121,15 +2188,21 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideRange */
-    public function testRange($input, $start, $end, $step, $take, $expect): void
+    public function testRange($start, $end, $take, $expect): void
     {
-        $this->assertEquals($expect, Collection::range($start, $end, $step)->take($take)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::range($start, $end)->take($take)->toArray()
+        );
     }
 
     /** @dataProvider provideRealize */
     public function testRealize($input, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->realize());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->realize()
+        );
     }
 
     /** @dataProvider provideReduce */
@@ -2147,7 +2220,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideReduceRight */
     public function testReduceRight($input, $reduce, $startValue, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->reduceRight($reduce, $startValue));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->reduceRight($reduce, $startValue)
+        );
     }
 
     /** @dataProvider provideReductions */
@@ -2198,7 +2274,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideReverse */
     public function testReverse($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->reverse()->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->reverse()->toArray()
+        );
     }
 
     /** @dataProvider provideSecond */
@@ -2259,7 +2338,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideSlice */
     public function testSlice($input, $from, $to, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->slice($from, $to)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->slice($from, $to)->toArray()
+        );
     }
 
     /** @dataProvider provideSome */
@@ -2271,19 +2353,28 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideSort */
     public function testSort($input, $sort, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->sort($sort)->toArray(true));
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->sort($sort)->toArray()
+        );
     }
 
     /** @dataProvider provideSplitAt */
     public function testSplitAt($input, $position, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->splitAt($position)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->splitAt($position)->toArrayRecursive()
+        );
     }
 
     /** @dataProvider provideSplitWith */
     public function testSplitWith($input, $contains, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->splitWith($contains)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->splitWith($contains)->toArrayRecursive()
+        );
     }
 
     /** @dataProvider provideSum */
@@ -2307,45 +2398,64 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideTakeWhile */
     public function testTakeWhile($input, $takeWhile, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->takeWhile($takeWhile)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->takeWhile($takeWhile)->toArray()
+        );
     }
 
     /** @dataProvider provideToArray */
     public function testToArray($input, $expected): void
     {
-        $this->assertEquals($expected, Collection::from($input)->toArray());
+        $this->assertEquals(
+            $expected,
+            Collection::from($input)->toArray()
+        );
     }
 
     /** @dataProvider provideToString */
     public function testToString($input, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->toString());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->toString()
+        );
     }
 
-    /** @dataProvider provideTransformer */
-    public function testTransformer($input, $transform, $expect): void
+    /** @dataProvider provideTransform */
+    public function testTransform($input, $transform, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->transform($transform)->toArray());
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->transform($transform)->toArray()
+        );
     }
 
-    /** @dataProvider provideTransformer_fail */
-    public function testTransformer_fail($input, $transform, $expect): void
+    /** @dataProvider provideTransform_fail */
+    public function testTransform_fail($input, $transform, $expect): void
     {
         $this->expectException($expect);
         Collection::from($input)->transform($transform)->toArray();
     }
 
     /** @dataProvider provideTranspose */
-    public function testTranspose($input, $transpose, $expect): void
+    public function testTranspose($input, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->transpose(...$transpose)->toArray());
+        $this->markTestSkipped("TODO");
+
+        $this->assertEquals(
+            $expect,
+            Collection::from(...$input)->transpose()->toArrayRecursive()
+        );
     }
 
     /** @dataProvider provideTranspose_fail */
-    public function testTranspose_fail($input, $transpose, $expect): void
+    public function testTranspose_fail($input, $expect): void
     {
+        $this->markTestSkipped("TODO");
+
         $this->expectException($expect);
-        Collection::from($input)->transpose(...$transpose)->toArray();
+        Collection::from($input)->transpose()->toArray();
     }
 
     /** @dataProvider provideValues */
@@ -2357,6 +2467,11 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideZip */
     public function testZip($input, $zip, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->zip(...$zip)->toArray());
+        $this->markTestSkipped();
+
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->zip(...$zip)->toArrayRecursive()
+        );
     }
 }

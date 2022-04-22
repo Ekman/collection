@@ -6,7 +6,9 @@ use Nekman\Collection\Exceptions\NoMoreItems;
 
 function iterable_iterate(mixed $value, callable $iterate): iterable
 {
-    $value = duplicate($value);
+    $duplicated = duplicate($value);
+
+    $value = $duplicated;
 
     yield $value;
 
@@ -14,7 +16,7 @@ function iterable_iterate(mixed $value, callable $iterate): iterable
         try {
             $value = $iterate($value);
             yield $value;
-        } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems) {
+        } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems $e) {
             break;
         }
     }

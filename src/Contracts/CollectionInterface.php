@@ -192,20 +192,20 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      *
      * @param callable $find
      * @param mixed $default
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return mixed
      */
-    public function find(callable $find, mixed $default = null, bool $convertToIterable = false): mixed;
+    public function find(callable $find, mixed $default = null, bool $convertToCollection = false): mixed;
 
     /**
      * Returns first item of this collection. If the collection is empty, throws ItemNotFound. If $convertToCollection
      * is true and the return value is a collection (array|Traversable) an instance of Collection is returned.
      *
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return mixed
      * @throws ItemNotFound
      */
-    public function first(bool $convertToIterable = false): mixed;
+    public function first(bool $convertToCollection = false): mixed;
 
     /**
      * Returns a lazy collection with one or multiple levels of nesting flattened. Removes all nesting when no value
@@ -237,11 +237,11 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      * instance of Collection will be returned.
      *
      * @param mixed $key
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return mixed
      * @throws ItemNotFound
      */
-    public function get(mixed $key, bool $convertToIterable = false): mixed;
+    public function get(mixed $key, bool $convertToCollection = false): mixed;
 
     /**
      * Returns item at the key $key. If multiple items have this key, return first. If no item has this key, return
@@ -250,11 +250,11 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      *
      * @param mixed $key
      * @param mixed $default
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return mixed
      * @throws ItemNotFound
      */
-    public function getOrDefault(mixed $key, mixed $default = null, bool $convertToIterable = false): mixed;
+    public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): mixed;
 
     /**
      * Returns collection which items are separated into groups indexed by the return value of $function.
@@ -348,11 +348,11 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      * Returns last item of this collection. If the collection is empty, throws ItemNotFound. If $convertToCollection
      * is true and the return value is a collection (array|Traversable) it is converted to Collection.
      *
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return mixed
      * @throws ItemNotFound
      */
-    public function last(bool $convertToIterable = false): mixed;
+    public function last(bool $convertToCollection = false): mixed;
 
     /**
      * Returns collection where each item is changed to the output of executing $function on each key/item.
@@ -451,10 +451,10 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      *
      * @param callable $reduce ($tmpValue, $value, $key)
      * @param mixed $startValue
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return mixed|self
      */
-    public function reduce(callable $reduce, mixed $startValue, bool $convertToIterable = false): mixed;
+    public function reduce(callable $reduce, mixed $startValue, bool $convertToCollection = false): mixed;
 
     /**
      * Reduce the collection to single value. Walks from right to left. If $convertToCollection is true and the return
@@ -462,10 +462,10 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      *
      * @param callable $reduceRight Must take 2 arguments, intermediate value and item from the iterator.
      * @param mixed $startValue
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return self
      */
-    public function reduceRight(callable $reduceRight, mixed $startValue, bool $convertToIterable = false): mixed;
+    public function reduceRight(callable $reduceRight, mixed $startValue, bool $convertToCollection = false): mixed;
 
     /**
      * Returns a lazy collection of reduction steps.
@@ -521,11 +521,11 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
      * $convertToCollection is true and the return value is a collection (array|Traversable) it is converted to
      * Collection.
      *
-     * @param bool $convertToIterable
+     * @param bool $convertToCollection
      * @return mixed
      * @throws ItemNotFound
      */
-    public function second(bool $convertToIterable = false): mixed;
+    public function second(bool $convertToCollection = false): mixed;
 
     /**
      * Returns a non-collection of shuffled items from this collection
@@ -659,6 +659,14 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function toArray(bool $onlyValues = false): array;
 
     /**
+     * Converts collection and all children to array. If there are multiple items with the same key, only the last will be preserved.
+     *
+     * @param bool $onlyValues Shortcut for doing values()->toArrayRecursive()
+     * @return array
+     */
+    public function toArrayRecursive(bool $onlyValues = false): array;
+
+    /**
      * Returns a string by concatenating the collection values into a string.
      *
      * @return string
@@ -675,11 +683,11 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     /**
      * Uses a $transformer callable that takes a Collection and returns Collection on itself.
      *
-     * @param callable $transformer Collection => Collection
+     * @param callable $transform Collection => Collection
      * @return self
      * @throws InvalidReturnValue
      */
-    public function transform(callable $transformer): self;
+    public function transform(callable $transform): self;
 
     /**
      * Transpose each item in a collection, interchanging the row and column indexes.

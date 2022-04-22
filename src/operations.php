@@ -4,6 +4,7 @@ namespace Nekman\Collection;
 
 use Iterator;
 use IteratorIterator;
+use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Nekman\Collection\Exceptions\InvalidReturnValue;
 use Nekman\Collection\Exceptions\ItemNotFound;
@@ -13,7 +14,9 @@ use function shuffle;
 
 function iterable_append(iterable $it, mixed $value, mixed $key = null): iterable
 {
-    yield from $it;
+    foreach ($it as $k => $v) {
+        yield $k => $v;
+    }
 
     if ($key === null) {
         yield $value;
@@ -53,7 +56,9 @@ function iterable_combine(iterable $keys, iterable $values): iterable
 function iterable_concat(iterable ...$its): iterable
 {
     foreach ($its as $it) {
-        yield from $it;
+        foreach ($it as $key => $value) {
+            yield $key => $value;
+        }
     }
 }
 
@@ -68,11 +73,11 @@ function iterable_contains(iterable $it, mixed $needle): bool
     return false;
 }
 
-function iterable_count_by(iterable $it, callable $countBy): iterable
+function iterable_count_by(iterable $its, callable $countBy): iterable
 {
     return iterable_map(
-        iterable_group_by($it, $countBy),
-        "iterable_size"
+        iterable_group_by($its, $countBy),
+        fn (iterable $it) => iterable_size($it)
     );
 }
 
@@ -86,9 +91,8 @@ function iterable_cycle(iterable $it): iterable
 function iterable_diff(iterable $it, iterable ...$its): iterable
 {
     $valuesToCompare = iterable_to_array(
-        iterable_values(
-            iterable_concat(...$its)
-        )
+        iterable_concat(...$its),
+        true
     );
 
     foreach ($it as $key => $value) {
@@ -170,7 +174,13 @@ function iterable_extract(iterable $it, string $keyPath): iterable
 
     $extractor = function ($coll) use ($pathParts) {
         foreach ($pathParts as $pathPart) {
-            $coll = iterable_flatten(iterable_filter($coll, 'is_iterable'), 1);
+            $coll = iterable_flatten(
+                iterable_filter(
+                    $coll,
+                    fn ($value) => is_iterable($value),
+                ),
+                1
+            );
 
             if ($pathPart != '*') {
                 $pathPart = str_replace(['\.', '\*'], ['.', '*'], $pathPart);
@@ -191,7 +201,7 @@ function iterable_extract(iterable $it, string $keyPath): iterable
 function iterable_filter(iterable $it, ?callable $filter = null): iterable
 {
     if (!$filter) {
-        $filter = "boolval";
+        $filter = fn ($value) => boolval($value);
     }
 
     foreach ($it as $key => $value) {
@@ -201,7 +211,7 @@ function iterable_filter(iterable $it, ?callable $filter = null): iterable
     }
 }
 
-function iterable_find(iterable $it, callable $find, mixed $default = nulle): mixed
+function iterable_find(iterable $it, callable $find, mixed $default = null): mixed
 {
     foreach ($it as $key => $value) {
         if ($find($value, $key)) {
@@ -212,10 +222,10 @@ function iterable_find(iterable $it, callable $find, mixed $default = nulle): mi
     return $default;
 }
 
-function iterable_first(iterable $it, bool $convertToIterable = false): mixed
+function iterable_first(iterable $it): mixed
 {
     foreach ($it as $value) {
-        return $convertToIterable ? [$value] : $value;
+        return $value;
     }
 
     throw new ItemNotFound;
@@ -224,13 +234,13 @@ function iterable_first(iterable $it, bool $convertToIterable = false): mixed
 function iterable_index_by(iterable $it, callable $indexBy): iterable
 {
     foreach ($it as $key => $value) {
-        yield $indexBy($key, $value) => $value;
+        yield $indexBy($value, $key) => $value;
     }
 }
 
 function iterable_except(iterable $it, iterable $keys): iterable
 {
-    $keys = iterable_to_array(iterable_values($keys));
+    $keys = iterable_to_array($keys, true);
 
     return iterable_reject(
         $it,
@@ -380,6 +390,25 @@ function iterable_to_array(iterable $it, bool $onlyValues = false): array
     );
 }
 
+function iterable_to_array_recursive(iterable $it, bool $onlyValues = false): array
+{
+    if ($onlyValues) {
+        $it = iterable_values($it);
+    }
+
+    $array = [];
+
+    foreach ($it as $key => $value) {
+        if (is_iterable($value)) {
+            $value = iterable_to_array_recursive($value, $onlyValues);
+        }
+
+        $array[$key] = $value;
+    }
+
+    return $array;
+}
+
 function iterable_realize(iterable $it): iterable
 {
     return iterable_to_array($it);
@@ -423,7 +452,7 @@ function iterable_mapcat(iterable $it, callable $mapcat): iterable
 
 function iterable_only(iterable $it, iterable $keys): iterable
 {
-    $keys = iterable_to_array(iterable_values($keys));
+    $keys = iterable_to_array($keys, true);
 
     return iterable_filter(
         $it,
@@ -438,21 +467,21 @@ function iterable_flip(iterable $it): iterable
     }
 }
 
-function iterable_get(iterable $it, mixed $key, bool $convertToIterable = false): mixed
+function iterable_get(iterable $it, mixed $key): mixed
 {
-    foreach ($it as $itKey => $value) {
-        if ($itKey === $key) {
-            return $convertToIterable ? [$value] : $value;
+    foreach ($it as $valueKey => $value) {
+        if ($valueKey === $key) {
+            return $value;
         }
     }
 
     throw new ItemNotFound;
 }
 
-function iterable_get_or_default(iterable $it, mixed $key, mixed $default = null, bool $convertToIterable = false): mixed
+function iterable_get_or_default(iterable $it, mixed $key, mixed $default = null): mixed
 {
     try {
-        return iterable_get($it, $key, $convertToIterable);
+        return iterable_get($it, $key);
     } catch (ItemNotFound) {
         return $default;
     }
@@ -475,7 +504,7 @@ function iterable_group_by_key(iterable $it, mixed $key): iterable
     return iterable_group_by(
         iterable_filter(
             $it,
-            fn ($item) => iterable_has($item, $key),
+            fn ($item) => is_iterable($item) && iterable_has($item, $key),
         ),
         fn ($value) => iterable_get($value, $key)
     );
@@ -493,19 +522,22 @@ function iterable_has(iterable $it, mixed $key): bool
 
 function iterable_frequencies(iterable $it): iterable
 {
-    return iterable_count_by($it, '\Nekman\Collection\identity');
+    return iterable_count_by($it, fn ($value) => identity($value));
 }
 
 function iterable_interleave(iterable ...$its): iterable
 {
     /* @var Iterator[] $iterators */
-    $iterators = iterable_map(
-        $its,
-        function (iterable $it) {
-            $it = new IteratorIterator(iterable_to_traversable($it));
-            $it->rewind();
-            return $it;
-        }
+    $iterators = iterable_to_array(
+        iterable_map(
+            $its,
+            function (iterable $it) {
+                $it = new IteratorIterator(iterable_to_traversable($it));
+                $it->rewind();
+                return $it;
+            }
+        ),
+        true
     );
 
     $valid = false;
@@ -539,7 +571,10 @@ function iterable_interpose(iterable $it, mixed $separator): iterable
 
 function iterable_intersect(iterable $it, iterable ...$its): iterable
 {
-    $valuesToCompare = iterable_to_array(iterable_values(iterable_concat(...$its)));
+    $valuesToCompare = iterable_to_array(
+        iterable_concat(...$its),
+        true
+    );
 
     foreach ($it as $key => $value) {
         if (in_array($value, $valuesToCompare)) {
@@ -562,7 +597,7 @@ function iterable_is_not_empty(iterable $it): bool
     return !iterable_is_empty($it);
 }
 
-function iterable_last(iterable $it, bool $convertToIterable = false): mixed
+function iterable_last(iterable $it): mixed
 {
     foreach ($it as $value) {
         $last = $value;
@@ -572,29 +607,29 @@ function iterable_last(iterable $it, bool $convertToIterable = false): mixed
         throw new ItemNotFound;
     }
 
-    return $convertToIterable ? [$last] : $last;
+    return $last;
 }
 
 function iterable_max(iterable $it): mixed
 {
-    $max = null;
+    $max = PHP_INT_MIN;
 
     foreach ($it as $value) {
         $max = max($value, $max);
     }
 
-    return $max;
+    return $max === PHP_INT_MIN ? null : $max;
 }
 
 function iterable_min(iterable $it): mixed
 {
-    $min = null;
+    $min = PHP_INT_MAX;
 
     foreach ($it as $value) {
         $min = min($value, $min);
     }
 
-    return $min;
+    return $min === PHP_INT_MAX ? null : $min;
 }
 
 function iterable_partition(iterable $it, int $nItems, int $step = 0, iterable $padding = []): iterable
@@ -654,7 +689,9 @@ function iterable_prepend(iterable $it, mixed $value, mixed $key = null): iterab
         yield $value;
     }
 
-    yield from $it;
+    foreach ($it as $k => $v) {
+        yield $k => $v;
+    }
 }
 
 function iterable_reduce_right(iterable $it, callable $reduceRight, mixed $startValue): mixed
@@ -690,14 +727,22 @@ function iterable_join(iterable $it, string $separator = ""): string
 function iterable_sort(iterable $it, callable $sort): iterable
 {
     $array = iterable_to_array(
-        iterable_values(
-            iterable_reference_key_value($it)
-        )
+        iterable_reference_key_value($it),
+        true
     );
 
     uasort(
         $array,
-        fn ($a, $b) => $sort($a[1], $b[1], $a[0], $b[0])
+        function ($a, $b) use ($sort) {
+            $compare = $sort($a[1], $b[1], $a[0], $b[0]);
+
+            // We do this to silence deprecated warning
+            if (is_bool($compare)) {
+                return $compare ? 1 : -1;
+            }
+
+            return $compare;
+        }
     );
 
     return iterable_dereference_key_value($array);
@@ -721,7 +766,7 @@ function iterable_to_string(iterable $it): string
 {
     return iterable_reduce(
         $it,
-        fn (string $sum, string $value) => $sum . $value,
+        fn (string $sum, ?string $value) => $sum . $value,
         ""
     );
 }
@@ -729,13 +774,16 @@ function iterable_to_string(iterable $it): string
 function iterable_zip(iterable ...$its): iterable
 {
     /* @var Iterator[] $iterators */
-    $iterators = iterable_map(
-        $its,
-        function ($it) {
-            $it = new IteratorIterator(iterable_to_traversable($it));
-            $it->rewind();
-            return $it;
-        }
+    $iterators = iterable_to_array(
+        iterable_map(
+            $its,
+            function (iterable $it) {
+                $it = new IteratorIterator(iterable_to_traversable($it));
+                $it->rewind();
+                return $it;
+            }
+        ),
+        true
     );
 
     while (true) {
@@ -777,15 +825,20 @@ function iterable_transpose(iterable ...$its): iterable
         throw new InvalidArgument('Can only transpose iterable of iterables.');
     }
 
-    return iterable_map(
-        $its,
-        'Nekman\Collection\iterable_to_array'
+    return array_map(
+        fn (...$items) => $items,
+        ...iterable_to_array(
+            iterable_map(
+                $its,
+                fn (iterable $it) => iterable_to_array($it)
+            )
+        )
     );
 }
 
-function iterable_transform(iterable $it, callable $transformer): iterable
+function iterable_transform(iterable $it, callable $transform): iterable
 {
-    $transformed = $transformer($it);
+    $transformed = $transform($it);
 
     if (!is_iterable($transformed)) {
         throw new InvalidReturnValue;
@@ -916,9 +969,8 @@ function iterable_second(iterable $it): mixed
 function iterable_shuffle(iterable $it): iterable
 {
     $buffer = iterable_to_array(
-        iterable_values(
-            iterable_reference_key_value($it)
-        )
+        iterable_reference_key_value($it),
+        true
     );
 
     shuffle($buffer);
@@ -929,12 +981,12 @@ function iterable_shuffle(iterable $it): iterable
 function duplicate(mixed $input): mixed
 {
     if (is_array($input)) {
-        return iterable_to_array(
-            iterable_map($input, fn ($i) => duplicate($i))
-        );
-    } elseif (is_object($input)) {
-        return clone $input;
-    } else {
-        return $input;
+        return array_map(fn ($i) => duplicate($i), $input);
     }
+
+    if (is_object($input)) {
+        return clone $input;
+    }
+
+    return $input;
 }
