@@ -832,9 +832,13 @@ final class FunctionsTest extends TestCase
                 ],
                 "type",
                 [
-                    ["letter" => "A", "type" => "caps"],
-                    ["letter" => "a", "type" => "small"],
-                    ["letter" => "B", "type" => "caps"],
+                    "caps" => [
+                        ["letter" => "A", "type" => "caps"],
+                        ["letter" => "B", "type" => "caps"],
+                    ],
+                    "small" => [
+                        ["letter" => "a", "type" => "small"],
+                    ],
                 ],
             ],
         ];
@@ -2002,7 +2006,7 @@ final class FunctionsTest extends TestCase
     {
         $this->assertEquals(
             $expect,
-            Collection::from($input)->groupByKey($key)->toArray()
+            Collection::from($input)->groupByKey($key)->toArrayRecursive()
         );
     }
 
