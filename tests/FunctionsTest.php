@@ -1919,9 +1919,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideFirst */
-    public function testFirst($input, $convertToIterable, $expect): void
+    public function testFirst($input, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->first($convertToIterable);
+        $result = Collection::from($input)->first($convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -1981,9 +1981,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideGet */
-    public function testGet($input, $key, $convertToIterable, $expect): void
+    public function testGet($input, $key, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->get($key, $convertToIterable);
+        $result = Collection::from($input)->get($key, $convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -1993,9 +1993,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideGetOrDefault */
-    public function testGetOrDefault($input, $key, $default, $convertToIterable, $expect): void
+    public function testGetOrDefault($input, $key, $default, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->getOrDefault($key, $default, $convertToIterable);
+        $result = Collection::from($input)->getOrDefault($key, $default, $convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -2103,9 +2103,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideLast */
-    public function testLast($input, $convertToIterable, $expect): void
+    public function testLast($input, $convertToCollection, $expect): void
     {
-        $result = Collection::from($input)->last($convertToIterable);
+        $result = Collection::from($input)->last($convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
@@ -2216,9 +2216,9 @@ final class FunctionsTest extends TestCase
     }
 
     /** @dataProvider provideReduce */
-    public function testReduce($input, $reduce, $startValue, $convertToIterable, $expected): void
+    public function testReduce($input, $reduce, $startValue, $convertToCollection, $expected): void
     {
-        $result = Collection::from($input)->reduce($reduce, $startValue, $convertToIterable);
+        $result = Collection::from($input)->reduce($reduce, $startValue, $convertToCollection);
 
         if (is_iterable($result)) {
             $result = iterable_to_array($result);
