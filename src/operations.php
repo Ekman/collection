@@ -503,7 +503,7 @@ function iterable_group_by_key(iterable $it, mixed $key): iterable
     return iterable_group_by(
         iterable_filter(
             $it,
-            fn ($item) => iterable_has($item, $key),
+            fn ($item) => is_iterable($item) && iterable_has($item, $key),
         ),
         fn ($value) => iterable_get($value, $key)
     );
