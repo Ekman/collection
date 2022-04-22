@@ -2464,8 +2464,6 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideTranspose_fail */
     public function testTranspose_fail($input, $expect): void
     {
-        $this->markTestSkipped();
-
         $this->expectException($expect);
         Collection::from($input)->transpose()->toArray();
     }
