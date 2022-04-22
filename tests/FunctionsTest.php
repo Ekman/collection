@@ -1213,7 +1213,7 @@ final class FunctionsTest extends TestCase
                 [1, 3, 3, 2],
                 fn (CollectionInterface $temp, $item) => $temp->append($item),
                 new Collection(),
-                new Collection([2, 3, 3, 1]),
+                new Collection(fn () => yield from [2, 3, 3, 1]),
             ],
         ];
     }
@@ -2150,7 +2150,10 @@ final class FunctionsTest extends TestCase
     /** @dataProvider provideReduceRight */
     public function testReduceRight($input, $reduce, $startValue, $expect): void
     {
-        $this->assertEquals($expect, Collection::from($input)->reduceRight($reduce, $startValue));
+        $this->assertEquals(
+            $expect,
+            Collection::from($input)->reduceRight($reduce, $startValue)
+        );
     }
 
     /** @dataProvider provideReductions */
