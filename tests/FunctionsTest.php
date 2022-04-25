@@ -2474,4 +2474,19 @@ final class FunctionsTest extends TestCase
             Collection::from($input)->zip(...$zip)->toArrayRecursive()
         );
     }
+
+    public function testMultipleOperations(): void
+    {
+        $input = Collection::from([1, 2, 3])
+            ->map(fn (int $number) => $number * 2)
+            ->filter(fn (int $number) => $number !== 2)
+            ->values();
+
+        $this->assertEquals([4, 6], $input->toArray());
+
+        $input = $input->map(fn (int $number) => $number * 2)
+            ->values();
+
+        $this->assertEquals([8, 12], $input->toArray());
+    }
 }

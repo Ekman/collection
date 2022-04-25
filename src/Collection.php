@@ -58,7 +58,7 @@ class Collection implements CollectionInterface
 
     public function toArray(bool $onlyValues = false): array
     {
-        return iterable_to_array($this->it, $onlyValues);
+        return $this->it = iterable_to_array($this->it, $onlyValues);
     }
 
     final public function __toString(): string
@@ -471,7 +471,7 @@ class Collection implements CollectionInterface
 
     public function toArrayRecursive(bool $onlyValues = false): array
     {
-        return iterable_to_array_recursive($this->it, $onlyValues);
+        return $this->it = iterable_to_array_recursive($this->it, $onlyValues);
     }
 
     public function transform(callable $transform): self
