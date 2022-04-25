@@ -47,7 +47,7 @@ class Collection implements CollectionInterface
 
     public function __clone(): void
     {
-        $this->it = clone $this->it;
+        $this->it = iterable_to_traversable($this->it);
     }
 
     final public function __serialize(): array
