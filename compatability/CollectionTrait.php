@@ -191,7 +191,7 @@ trait CollectionTrait
         return ($convertToCollection && is_iterable($result)) ? new Collection($result) : $result;
     }
 
-    public function first(bool $convertToCollection = false): Collection
+    public function first(bool $convertToCollection = false): mixed
     {
         try {
             $result = iterable_first($this->getItems());
@@ -228,7 +228,7 @@ trait CollectionTrait
         }
     }
 
-    public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): Collection
+    public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): mixed
     {
         try {
             $result = iterable_get_or_default($this->getItems(), $key, $default);
@@ -357,7 +357,7 @@ trait CollectionTrait
         return ($convertToCollection && is_iterable($result)) ? new Collection($result) : $result;
     }
 
-    public function reduceRight(callable $function, mixed $startValue, bool $convertToCollection = false): Collection
+    public function reduceRight(callable $function, mixed $startValue, bool $convertToCollection = false): mixed
     {
         $result = iterable_reduce_right($this->getItems(), $function, $startValue);
 
@@ -389,7 +389,7 @@ trait CollectionTrait
         return new Collection(iterable_reverse($this->getItems()));
     }
 
-    public function second(mixed $convertToCollection = false): Collection
+    public function second(mixed $convertToCollection = false): mixed
     {
         try {
             $result = iterable_second($this->getItems());
