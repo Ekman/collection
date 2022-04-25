@@ -2,11 +2,12 @@
 
 namespace Nekman\Collection;
 
+use DeepCopy\DeepCopy;
 use Nekman\Collection\Exceptions\NoMoreItems;
 
 function iterable_iterate(mixed $value, callable $iterate): iterable
 {
-    $duplicated = duplicate($value);
+    $duplicated = (new DeepCopy)->copy($value);
 
     $value = $duplicated;
 

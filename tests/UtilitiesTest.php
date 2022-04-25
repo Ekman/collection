@@ -41,37 +41,4 @@ final class UtilitiesTest extends TestCase
     {
         $this->assertEquals(4, identity(4));
     }
-
-    /** @dataProvider provideDuplicate */
-    public function testDuplicate($input): void
-    {
-        $result = duplicate($input);
-        $this->assertEquals($input, $result);
-        $this->assertNotSame($input, $result);
-    }
-
-    public function provideDuplicate()
-    {
-        return [
-            "Test collection" =>  [new Collection([1, 2, 3])],
-        ];
-    }
-
-    /** @dataProvider provideDuplicate_same */
-    public function testDuplicate_same($input): void
-    {
-        $result = duplicate($input);
-        $this->assertEquals($input, $result);
-        $this->assertSame($input, $result);
-    }
-
-    public function provideDuplicate_same()
-    {
-        return [
-            "Test primitive" => [1],
-            "Test primitive, string" => ["foo"],
-            "Test array" => [[1, 2, 3]],
-            "Test object" => [new \Exception("foo")],
-        ];
-    }
 }

@@ -2,6 +2,7 @@
 
 namespace DusanKasan\Knapsack;
 
+use DeepCopy\DeepCopy;
 use Nekman\Collection\Exceptions\ItemNotFound;
 use Nekman\Collection\Exceptions\NoMoreItems;
 use function Nekman\Collection\iterable_append;
@@ -569,12 +570,12 @@ function isCollection(mixed $input): bool
 }
 
 /**
- * @deprecated
- * @see \Nekman\Collection\duplicate()
+ * @deprecated The duplicate function will be removed. See alternative solutions, e.g. the myclabs/deep-copy package.
+ * @see DeepCopy::copy()
  */
 function duplicate(mixed $input): mixed
 {
-    return \Nekman\Collection\duplicate($input);
+    return (new DeepCopy)->copy($input);
 }
 
 /**

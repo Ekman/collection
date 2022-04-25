@@ -3,6 +3,7 @@
 namespace Nekman\Collection;
 
 use ArrayIterator;
+use DeepCopy\DeepCopy;
 use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Traversable;
@@ -48,7 +49,7 @@ class Collection implements CollectionInterface
 
     public function __clone(): void
     {
-        $this->it = duplicate($this->it);
+        $this->it = (new DeepCopy)->copy($this->it);
     }
 
     final public function __serialize(): array
