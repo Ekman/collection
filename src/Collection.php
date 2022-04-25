@@ -2,13 +2,14 @@
 
 namespace Nekman\Collection;
 
+use ArrayIterator;
 use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Traversable;
 
 class Collection implements CollectionInterface
 {
-    private iterable $it;
+    private Traversable $it;
 
     public function __construct(iterable|callable $it = [])
     {
@@ -22,7 +23,7 @@ class Collection implements CollectionInterface
             throw new InvalidArgument;
         }
 
-        $this->it = $it;
+        $this->it = is_array($it) ? new ArrayIterator($it) : $it;
     }
 
     public static function from(iterable|callable $it = []): self
@@ -232,13 +233,13 @@ class Collection implements CollectionInterface
     public function groupBy(callable $groupBy): self
     {
         $result = iterable_group_by($this->it, $groupBy);
-        return new self(iterable_map($result, fn (iterable $it) => new self($it)));
+        return new self(iterable_map($result, fn(iterable $it) => new self($it)));
     }
 
     public function groupByKey(mixed $key): self
     {
         $result = iterable_group_by_key($this->it, $key);
-        return new self(iterable_map($result, fn (iterable $it) => new self($it)));
+        return new self(iterable_map($result, fn(iterable $it) => new self($it)));
     }
 
     public function has(mixed $key): bool
@@ -325,7 +326,7 @@ class Collection implements CollectionInterface
     public function partition(int $nItems, int $step = 0, iterable $padding = []): self
     {
         $partition = iterable_partition($this->it, $nItems, $step, $padding);
-        $partition = iterable_map($partition, fn ($it) => is_iterable($it) ? new self($it) : $it);
+        $partition = iterable_map($partition, fn($it) => is_iterable($it) ? new self($it) : $it);
 
         return new self($partition);
     }
@@ -475,7 +476,7 @@ class Collection implements CollectionInterface
 
     public function transform(callable $transform): self
     {
-        $newTransform = fn (iterable $item) => $transform($item instanceof CollectionInterface ? $item : new Collection($item));
+        $newTransform = fn(iterable $item) => $transform($item instanceof CollectionInterface ? $item : new Collection($item));
 
         return new self(iterable_transform($this->it, $newTransform));
     }
@@ -483,7 +484,7 @@ class Collection implements CollectionInterface
     public function transpose(iterable ...$its): self
     {
         $result = iterable_transpose($this->it, ...$its);
-        return new self(iterable_map($result, fn (iterable $it) => new self($it)));
+        return new self(iterable_map($result, fn(iterable $it) => new self($it)));
     }
 
     public function values(): self
