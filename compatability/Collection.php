@@ -45,7 +45,7 @@ class Collection implements IteratorAggregate, Serializable
      * @param callable|iterable $input
      * @return Collection
      */
-    public static function from(callable|iterable $input)
+    public static function from(callable|iterable $input): self
     {
         return new self($input);
     }
@@ -59,7 +59,7 @@ class Collection implements IteratorAggregate, Serializable
      * @param callable $function
      * @return Collection
      */
-    public static function iterate(mixed $input, callable $function)
+    public static function iterate(mixed $input, callable $function): self
     {
         return iterate($input, $function);
     }
@@ -72,7 +72,7 @@ class Collection implements IteratorAggregate, Serializable
      * @param int $step
      * @return Collection
      */
-    public static function range(int $start = 0, ?int $end = null, int $step = 1)
+    public static function range(int $start = 0, ?int $end = null, int $step = 1): self
     {
         return range($start, $end, $step);
     }
@@ -84,7 +84,7 @@ class Collection implements IteratorAggregate, Serializable
      * @param int $times
      * @return Collection
      */
-    public static function repeat($value, $times = -1)
+    public static function repeat(mixed $value, int $times = -1): self
     {
         return repeat($value, $times);
     }
