@@ -216,7 +216,7 @@ class Collection implements CollectionInterface
 
     final public function getIterator(): Traversable
     {
-        return $this->toTraversable();
+        return $this->it;
     }
 
     public function toTraversable(): Traversable
