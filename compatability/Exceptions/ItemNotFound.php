@@ -2,10 +2,12 @@
 
 namespace DusanKasan\Knapsack\Exceptions;
 
+use Nekman\Collection\Exceptions\CollectionException;
+
 /**
  * @deprecated
  * @see \Nekman\Collection\Collection
  */
-class ItemNotFound extends \Nekman\Collection\Exceptions\ItemNotFound
+class ItemNotFound extends CollectionException
 {
 }

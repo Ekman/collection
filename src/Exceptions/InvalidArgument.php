@@ -2,6 +2,6 @@
 
 namespace Nekman\Collection\Exceptions;
 
-class InvalidArgument extends CollectionException
+class InvalidArgument extends \DusanKasan\Knapsack\Exceptions\InvalidReturnValue
 {
 }

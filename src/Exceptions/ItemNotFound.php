@@ -2,6 +2,6 @@
 
 namespace Nekman\Collection\Exceptions;
 
-class ItemNotFound extends CollectionException
+class ItemNotFound extends \DusanKasan\Knapsack\Exceptions\ItemNotFound
 {
 }

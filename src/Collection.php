@@ -6,7 +6,7 @@ use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Traversable;
 
-class Collection implements CollectionInterface
+class Collection extends \DusanKasan\Knapsack\Collection implements CollectionInterface
 {
     private iterable $it;
 

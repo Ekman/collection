@@ -16,7 +16,7 @@ function iterable_iterate(mixed $value, callable $iterate): iterable
         try {
             $value = $iterate($value);
             yield $value;
-        } catch (NoMoreItems|\DusanKasan\Knapsack\Exceptions\NoMoreItems $e) {
+        } catch (NoMoreItems) {
             break;
         }
     }
