@@ -2477,7 +2477,7 @@ final class FunctionsTest extends TestCase
 
     public function testMultipleOperations(): void
     {
-        $input = Collection::from([1, 2, 3])
+        $input = Collection::from(new ArrayIterator([1, 2, 3]))
             ->map(fn (int $number) => $number * 2)
             ->filter(fn (int $number) => $number !== 2)
             ->values();

@@ -221,7 +221,7 @@ class Collection implements CollectionInterface
 
     public function toTraversable(): Traversable
     {
-        return $this->it = new ArrayIterator(iterable_to_array($this->it));
+        return iterable_to_traversable($this->it);
     }
 
     public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): mixed
