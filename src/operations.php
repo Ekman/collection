@@ -416,7 +416,7 @@ function iterable_realize(iterable $it): iterable
 
 function iterable_to_traversable(iterable $it): Traversable
 {
-    yield from $it;
+    return $it;
 }
 
 function iterable_keys(iterable $it): iterable
