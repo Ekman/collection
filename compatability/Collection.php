@@ -21,7 +21,6 @@ class Collection implements IteratorAggregate, Serializable
     use CollectionTrait;
 
     protected iterable $input;
-    private ?Closure $inputFactory = null;
 
     /**
      * @param callable|iterable $input If callable is passed, it must return an array|Traversable.
@@ -29,7 +28,6 @@ class Collection implements IteratorAggregate, Serializable
     public function __construct(callable|iterable $input)
     {
         if (is_callable($input)) {
-            $this->inputFactory = $input;
             $input = $input();
         }
 
@@ -38,7 +36,7 @@ class Collection implements IteratorAggregate, Serializable
         } elseif ($input instanceof Traversable) {
             $this->input = $input;
         } else {
-            throw $this->inputFactory ? new InvalidReturnValue : new InvalidArgument;
+            throw is_callable($input) ? new InvalidReturnValue : new InvalidArgument;
         }
     }
 
@@ -94,20 +92,6 @@ class Collection implements IteratorAggregate, Serializable
 
     public function getIterator(): Traversable
     {
-        if ($this->inputFactory) {
-            $input = call_user_func($this->inputFactory);
-
-            if (is_array($input)) {
-                $input = new ArrayIterator($input);
-            }
-
-            if (!($input instanceof Traversable)) {
-                throw new InvalidReturnValue;
-            }
-
-            $this->input = $input;
-        }
-
         return $this->input;
     }
 
