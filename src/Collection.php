@@ -2,8 +2,6 @@
 
 namespace Nekman\Collection;
 
-use ArrayIterator;
-use DeepCopy\DeepCopy;
 use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Traversable;
@@ -49,7 +47,7 @@ class Collection implements CollectionInterface
 
     public function __clone(): void
     {
-        $this->it = (new DeepCopy)->copy($this->it);
+        $this->it = iterable_to_traversable($this->it);
     }
 
     final public function __serialize(): array
@@ -215,12 +213,7 @@ class Collection implements CollectionInterface
         return $convertToCollection && is_iterable($get) ? new self($get) : $get;
     }
 
-    final public function getIterator(): Traversable
-    {
-        return $this->toTraversable();
-    }
-
-    public function toTraversable(): Traversable
+    public function getIterator(): Traversable
     {
         return iterable_to_traversable($this->it);
     }

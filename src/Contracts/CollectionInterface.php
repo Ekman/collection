@@ -674,13 +674,6 @@ interface CollectionInterface extends IteratorAggregate, Countable, JsonSerializ
     public function toString(): string;
 
     /**
-     * Convert the collection to a traversable
-     *
-     * @return Traversable
-     */
-    public function toTraversable(): Traversable;
-
-    /**
      * Uses a $transformer callable that takes a Collection and returns Collection on itself.
      *
      * @param callable $transform Collection => Collection

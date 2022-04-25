@@ -33,8 +33,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "php": "^8.0",
-        "myclabs/deep-copy": "^1.11"
+        "php": "^8.0"
     },
     "config": {
         "sort-packages": true

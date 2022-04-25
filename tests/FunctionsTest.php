@@ -2505,4 +2505,15 @@ final class FunctionsTest extends TestCase
 
         $this->assertEquals([8, 12], $result);
     }
+
+    public function testClone(): void
+    {
+        $input = new Collection([1, 2, 3, 4, 5]);
+        $clone = clone $input;
+        $this->assertEquals(
+            iterable_to_array($input),
+            iterable_to_array($clone),
+        );
+        $this->assertNotSame($input, $clone);
+    }
 }
