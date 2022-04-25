@@ -295,11 +295,7 @@ function each(iterable $collection, callable $function): Collection
  */
 function get(iterable $collection, mixed $key): mixed
 {
-    try {
-        return iterable_get($collection, $key);
-    } catch (ItemNotFound) {
-        throw new Exceptions\ItemNotFound;
-    }
+    return iterable_get($collection, $key);
 }
 
 /**
@@ -308,11 +304,7 @@ function get(iterable $collection, mixed $key): mixed
  */
 function getOrDefault(iterable $collection, mixed $key, mixed $default): mixed
 {
-    try {
-        return iterable_get_or_default($collection, $key, $default);
-    } catch (ItemNotFound) {
-        throw new Exceptions\ItemNotFound;
-    }
+    return iterable_get_or_default($collection, $key, $default);
 }
 
 /**
@@ -564,11 +556,7 @@ function repeat(mixed $value, int $times = -1): Collection
  */
 function range(int $start = 0, ?int $end = null, int $step = 1): Collection
 {
-    try {
-        return new Collection(iterable_range($start, $end, $step));
-    } catch (NoMoreItems) {
-        throw new Exceptions\NoMoreItems;
-    }
+    return new Collection(iterable_range($start, $end, $step));
 }
 
 /**

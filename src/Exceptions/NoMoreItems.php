@@ -2,6 +2,6 @@
 
 namespace Nekman\Collection\Exceptions;
 
-class NoMoreItems extends \DusanKasan\Knapsack\Exceptions\NoMoreItems
+class NoMoreItems extends CollectionException
 {
 }
