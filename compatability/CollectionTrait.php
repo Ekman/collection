@@ -3,7 +3,6 @@
 namespace DusanKasan\Knapsack;
 
 use DusanKasan\Knapsack\Exceptions\InvalidReturnValue;
-use Nekman\Collection\Exceptions\ItemNotFound;
 
 trait CollectionTrait
 {
@@ -46,7 +45,7 @@ trait CollectionTrait
      */
     public function concat(iterable ...$collections): Collection
     {
-        return concat($this, ...$collections);
+        return concat($this->getItems(), ...$collections);
     }
 
     /**

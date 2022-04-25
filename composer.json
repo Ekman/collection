@@ -13,7 +13,8 @@
             "src/utilities.php",
             "src/constructors.php",
             "compatability/operations.php",
-            "compatability/utilities.php"
+            "compatability/utilities.php",
+            "compatability/compatability.php"
         ]
     },
     "autoload-dev": {
