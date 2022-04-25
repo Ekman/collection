@@ -2,14 +2,15 @@
 
 namespace Nekman\Collection;
 
-use ArrayIterator;
+use Closure;
 use Nekman\Collection\Contracts\CollectionInterface;
 use Nekman\Collection\Exceptions\InvalidArgument;
 use Traversable;
 
 class Collection implements CollectionInterface
 {
-    private Traversable $it;
+    private iterable $it;
+    private ?Closure $inputFactory = null;
 
     public function __construct(iterable|callable $it = [])
     {
@@ -23,7 +24,8 @@ class Collection implements CollectionInterface
             throw new InvalidArgument;
         }
 
-        $this->it = is_array($it) ? new ArrayIterator($it) : $it;
+        $this->inputFactory = fn () => yield from $it;
+        $this->it = $it;
     }
 
     public static function from(iterable|callable $it = []): self
@@ -216,12 +218,22 @@ class Collection implements CollectionInterface
 
     final public function getIterator(): Traversable
     {
-        return $this->it;
+        if ($this->inputFactory) {
+            $it = ($this->inputFactory)();
+
+            if (!is_iterable($it)) {
+                throw new InvalidArgument;
+            }
+
+            $this->it = $it;
+        }
+
+        return $it;
     }
 
     public function toTraversable(): Traversable
     {
-        return iterable_to_traversable($this->it);
+        return $this->getIterator();
     }
 
     public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): mixed
