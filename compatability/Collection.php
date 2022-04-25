@@ -19,7 +19,7 @@ class Collection implements IteratorAggregate, Serializable
 {
     use CollectionTrait;
 
-    protected iterable $input;
+    protected Traversable $input;
 
     /**
      * @param callable|iterable $input If callable is passed, it must return an array|Traversable.

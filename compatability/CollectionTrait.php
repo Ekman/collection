@@ -3,6 +3,7 @@
 namespace DusanKasan\Knapsack;
 
 use DusanKasan\Knapsack\Exceptions\InvalidReturnValue;
+use Nekman\Collection\Exceptions\ItemNotFound;
 
 trait CollectionTrait
 {
@@ -22,7 +23,7 @@ trait CollectionTrait
      * @param callable|null $function ($value, $key)
      * @return Collection
      */
-    public function filter(callable $function = null)
+    public function filter(?callable $function = null)
     {
         return filter($this->getItems(), $function);
     }
@@ -40,10 +41,10 @@ trait CollectionTrait
     /**
      * Returns a lazy collection with items from all $collections passed as argument appended together
      *
-     * @param array|\Traversable ...$collections
+     * @param iterable ...$collections
      * @return Collection
      */
-    public function concat(...$collections)
+    public function concat(iterable ...$collections): Collection
     {
         return concat($this, ...$collections);
     }
@@ -54,7 +55,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function map(callable $function)
+    public function map(callable $function): Collection
     {
         return map($this->getItems(), $function);
     }
@@ -71,7 +72,7 @@ trait CollectionTrait
      * @param bool $convertToCollection
      * @return mixed|Collection
      */
-    public function reduce(callable $function, $startValue, $convertToCollection = false)
+    public function reduce(callable $function, mixed $startValue, bool $convertToCollection = false): mixed
     {
         $result = reduce($this->getItems(), $function, $startValue);
 
@@ -85,7 +86,7 @@ trait CollectionTrait
      * @param int $depth How many levels should be flatten, default (-1) is infinite.
      * @return Collection
      */
-    public function flatten($depth = -1)
+    public function flatten(int $depth = -1): Collection
     {
         return flatten($this->getItems(), $depth);
     }
@@ -97,7 +98,7 @@ trait CollectionTrait
      * @param callable $function ($value1, $value2, $key1, $key2)
      * @return Collection
      */
-    public function sort(callable $function)
+    public function sort(callable $function): Collection
     {
         return \DusanKasan\Knapsack\sort($this->getItems(), $function);
     }
@@ -110,7 +111,7 @@ trait CollectionTrait
      * @param int $to If omitted, will slice until end
      * @return Collection
      */
-    public function slice($from, $to = -1)
+    public function slice(int $from, int $to = -1): Collection
     {
         return slice($this->getItems(), $from, $to);
     }
@@ -121,7 +122,7 @@ trait CollectionTrait
      * @param callable $function ($value, $key)
      * @return Collection
      */
-    public function groupBy(callable $function)
+    public function groupBy(callable $function): Collection
     {
         return groupBy($this->getItems(), $function);
     }
@@ -132,7 +133,7 @@ trait CollectionTrait
      * @param mixed $key
      * @return Collection
      */
-    public function groupByKey($key)
+    public function groupByKey(mixed $key): Collection
     {
         return groupByKey($this->getItems(), $key);
     }
@@ -143,7 +144,7 @@ trait CollectionTrait
      * @param callable $function ($value, $key)
      * @return Collection
      */
-    public function each(callable $function)
+    public function each(callable $function): Collection
     {
         return \DusanKasan\Knapsack\each($this->getItems(), $function);
     }
@@ -153,7 +154,7 @@ trait CollectionTrait
      *
      * @return int
      */
-    public function size()
+    public function size(): int
     {
         return size($this->getItems());
     }
@@ -166,9 +167,9 @@ trait CollectionTrait
      * @param mixed $key
      * @param bool $convertToCollection
      * @return mixed|Collection
-     * @throws \DusanKasan\Knapsack\Exceptions\ItemNotFound
+     * @throws Exceptions\ItemNotFound
      */
-    public function get($key, $convertToCollection = false)
+    public function get(mixed $key, bool $convertToCollection = false): mixed
     {
         $result = get($this->getItems(), $key);
 
@@ -184,9 +185,9 @@ trait CollectionTrait
      * @param mixed $default
      * @param bool $convertToCollection
      * @return mixed|Collection
-     * @throws \DusanKasan\Knapsack\Exceptions\ItemNotFound
+     * @throws Exceptions\ItemNotFound
      */
-    public function getOrDefault($key, $default = null, $convertToCollection = false)
+    public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): mixed
     {
         $result = getOrDefault($this->getItems(), $key, $default);
 
@@ -202,7 +203,7 @@ trait CollectionTrait
      * @param bool $convertToCollection
      * @return mixed|Collection
      */
-    public function find(callable $function, $default = null, $convertToCollection = false)
+    public function find(callable $function, mixed $default = null, bool $convertToCollection = false): mixed
     {
         $result = find($this->getItems(), $function, $default);
 
@@ -216,7 +217,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function countBy(callable $function)
+    public function countBy(callable $function): Collection
     {
         return countBy($this->getItems(), $function);
     }
@@ -228,7 +229,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function indexBy(callable $function)
+    public function indexBy(callable $function): Collection
     {
         return indexBy($this->getItems(), $function);
     }
@@ -239,7 +240,7 @@ trait CollectionTrait
      * @param callable $function
      * @return bool
      */
-    public function every(callable $function)
+    public function every(callable $function): bool
     {
         return every($this->getItems(), $function);
     }
@@ -250,7 +251,7 @@ trait CollectionTrait
      * @param callable $function
      * @return bool
      */
-    public function some(callable $function)
+    public function some(callable $function): bool
     {
         return some($this->getItems(), $function);
     }
@@ -261,7 +262,7 @@ trait CollectionTrait
      * @param mixed $value
      * @return bool
      */
-    public function contains($value)
+    public function contains(mixed $value): bool
     {
         return contains($this->getItems(), $value);
     }
@@ -271,7 +272,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function reverse()
+    public function reverse(): Collection
     {
         return reverse($this->getItems());
     }
@@ -285,7 +286,7 @@ trait CollectionTrait
      * @param bool $convertToCollection
      * @return mixed|Collection
      */
-    public function reduceRight(callable $function, $startValue, $convertToCollection = false)
+    public function reduceRight(callable $function, mixed $startValue, bool $convertToCollection = false): mixed
     {
         $result = reduceRight($this->getItems(), $function, $startValue);
 
@@ -298,7 +299,7 @@ trait CollectionTrait
      * @param int $numberOfItems
      * @return Collection
      */
-    public function take($numberOfItems)
+    public function take(int $numberOfItems): Collection
     {
         return take($this->getItems(), $numberOfItems);
     }
@@ -309,7 +310,7 @@ trait CollectionTrait
      * @param int $numberOfItems
      * @return Collection
      */
-    public function drop($numberOfItems)
+    public function drop(int $numberOfItems): Collection
     {
         return drop($this->getItems(), $numberOfItems);
     }
@@ -319,7 +320,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function values()
+    public function values(): Collection
     {
         return values($this->getItems());
     }
@@ -330,7 +331,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function reject(callable $function)
+    public function reject(callable $function): Collection
     {
         return reject($this->getItems(), $function);
     }
@@ -340,7 +341,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function keys()
+    public function keys(): Collection
     {
         return keys($this->getItems());
     }
@@ -351,7 +352,7 @@ trait CollectionTrait
      * @param mixed $separator
      * @return Collection
      */
-    public function interpose($separator)
+    public function interpose(mixed $separator): Collection
     {
         return interpose($this->getItems(), $separator);
     }
@@ -362,7 +363,7 @@ trait CollectionTrait
      * @param int $numberOfItems
      * @return Collection
      */
-    public function dropLast($numberOfItems = 1)
+    public function dropLast(int $numberOfItems = 1): Collection
     {
         return dropLast($this->getItems(), $numberOfItems);
     }
@@ -371,10 +372,10 @@ trait CollectionTrait
      * Returns a lazy collection of first item from first collection, first item from second, second from first and
      * so on. Accepts any number of collections.
      *
-     * @param array|\Traversable ...$collections
+     * @param iterable ...$collections
      * @return Collection
      */
-    public function interleave(...$collections)
+    public function interleave(iterable ...$collections): Collection
     {
         return interleave($this->getItems(), ...$collections);
     }
@@ -384,7 +385,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function cycle()
+    public function cycle(): Collection
     {
         return cycle($this->getItems());
     }
@@ -397,7 +398,7 @@ trait CollectionTrait
      * @param mixed|null $key
      * @return Collection
      */
-    public function prepend($value, $key = null)
+    public function prepend(mixed $value, mixed $key = null): Collection
     {
         return prepend($this->getItems(), $value, $key);
     }
@@ -410,7 +411,7 @@ trait CollectionTrait
      * @param mixed $key
      * @return Collection
      */
-    public function append($value, $key = null)
+    public function append(mixed $value, mixed $key = null): Collection
     {
         return append($this->getItems(), $value, $key);
     }
@@ -422,7 +423,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function dropWhile(callable $function)
+    public function dropWhile(callable $function): Collection
     {
         return dropWhile($this->getItems(), $function);
     }
@@ -433,7 +434,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function mapcat(callable $function)
+    public function mapcat(callable $function): Collection
     {
         return mapcat($this->getItems(), $function);
     }
@@ -445,7 +446,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function takeWhile(callable $function)
+    public function takeWhile(callable $function): Collection
     {
         return takeWhile($this->getItems(), $function);
     }
@@ -456,7 +457,7 @@ trait CollectionTrait
      * @param int $position
      * @return Collection
      */
-    public function splitAt($position)
+    public function splitAt(int $position): Collection
     {
         return splitAt($this->getItems(), $position);
     }
@@ -467,7 +468,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function splitWith(callable $function)
+    public function splitWith(callable $function): Collection
     {
         return splitWith($this->getItems(), $function);
     }
@@ -476,10 +477,10 @@ trait CollectionTrait
      * Returns a lazy collection with items from this collection but values that are found in keys of $replacementMap
      * are replaced by their values.
      *
-     * @param array|\Traversable $replacementMap
+     * @param iterable $replacementMap
      * @return Collection
      */
-    public function replace($replacementMap)
+    public function replace(iterable $replacementMap): Collection
     {
         return replace($this->getItems(), $replacementMap);
     }
@@ -491,7 +492,7 @@ trait CollectionTrait
      * @param mixed $startValue
      * @return Collection
      */
-    public function reductions(callable $function, $startValue)
+    public function reductions(callable $function, mixed $startValue): Collection
     {
         return reductions($this->getItems(), $function, $startValue);
     }
@@ -502,7 +503,7 @@ trait CollectionTrait
      * @param int $step
      * @return Collection
      */
-    public function takeNth($step)
+    public function takeNth(int $step): Collection
     {
         return takeNth($this->getItems(), $step);
     }
@@ -512,7 +513,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function shuffle()
+    public function shuffle(): Collection
     {
         return \DusanKasan\Knapsack\shuffle($this->getItems());
     }
@@ -526,10 +527,10 @@ trait CollectionTrait
      *
      * @param int $numberOfItems
      * @param int $step
-     * @param array|\Traversable $padding
+     * @param iterable $padding
      * @return Collection
      */
-    public function partition($numberOfItems, $step = 0, $padding = [])
+    public function partition(int $numberOfItems, int $step = 0, iterable $padding = []): Collection
     {
         return partition($this->getItems(), $numberOfItems, $step, $padding);
     }
@@ -541,7 +542,7 @@ trait CollectionTrait
      * @param callable $function
      * @return Collection
      */
-    public function partitionBy(callable $function)
+    public function partitionBy(callable $function): Collection
     {
         return partitionBy($this->getItems(), $function);
     }
@@ -551,7 +552,7 @@ trait CollectionTrait
      *
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return isEmpty($this->getItems());
     }
@@ -561,7 +562,7 @@ trait CollectionTrait
      *
      * @return bool
      */
-    public function isNotEmpty()
+    public function isNotEmpty(): bool
     {
         return isNotEmpty($this->getItems());
     }
@@ -572,7 +573,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function frequencies()
+    public function frequencies(): Collection
     {
         return frequencies($this->getItems());
     }
@@ -583,9 +584,9 @@ trait CollectionTrait
      *
      * @param bool $convertToCollection
      * @return mixed|Collection
-     * @throws \DusanKasan\Knapsack\Exceptions\ItemNotFound
+     * @throws Exceptions\ItemNotFound
      */
-    public function first($convertToCollection = false)
+    public function first(bool $convertToCollection = false): Collection
     {
         $result = first($this->getItems());
 
@@ -598,9 +599,9 @@ trait CollectionTrait
      *
      * @param bool $convertToCollection
      * @return mixed|Collection
-     * @throws \DusanKasan\Knapsack\Exceptions\ItemNotFound
+     * @throws Exceptions\ItemNotFound
      */
-    public function last($convertToCollection = false)
+    public function last(bool $convertToCollection = false): mixed
     {
         $result = last($this->getItems());
 
@@ -612,7 +613,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function realize()
+    public function realize(): Collection
     {
         return realize($this->getItems());
     }
@@ -624,9 +625,9 @@ trait CollectionTrait
      *
      * @param bool $convertToCollection
      * @return mixed|Collection
-     * @throws \DusanKasan\Knapsack\Exceptions\ItemNotFound
+     * @throws Exceptions\ItemNotFound
      */
-    public function second($convertToCollection = false)
+    public function second(mixed $convertToCollection = false): mixed
     {
         $result = second($this->getItems());
 
@@ -637,11 +638,11 @@ trait CollectionTrait
      * Combines the values of this collection as keys, with values of $collection as values.  The resulting collection
      * has length equal to the size of smaller collection.
      *
-     * @param array|\Traversable $collection
+     * @param iterable $collection
      * @return Collection
-     * @throws \DusanKasan\Knapsack\Exceptions\ItemNotFound
+     * @throws Exceptions\ItemNotFound
      */
-    public function combine($collection)
+    public function combine(iterable $collection): Collection
     {
         return combine($this->getItems(), $collection);
     }
@@ -649,10 +650,10 @@ trait CollectionTrait
     /**
      * Returns a lazy collection without the items associated to any of the keys from $keys.
      *
-     * @param array|\Traversable $keys
+     * @param iterable $keys
      * @return Collection
      */
-    public function except($keys)
+    public function except(iterable $keys): Collection
     {
         return except($this->getItems(), $keys);
     }
@@ -660,10 +661,10 @@ trait CollectionTrait
     /**
      * Returns a lazy collection of items associated to any of the keys from $keys.
      *
-     * @param array|\Traversable $keys
+     * @param iterable $keys
      * @return Collection
      */
-    public function only($keys)
+    public function only(iterable $keys): Collection
     {
         return only($this->getItems(), $keys);
     }
@@ -672,10 +673,10 @@ trait CollectionTrait
      * Returns a lazy collection of items that are in $this but are not in any of the other arguments, indexed by the
      * keys from the first collection. Note that the ...$collections are iterated non-lazily.
      *
-     * @param array|\Traversable ...$collections
+     * @param iterable ...$collections
      * @return Collection
      */
-    public function diff(...$collections)
+    public function diff(iterable ...$collections): Collection
     {
         return diff($this->getItems(), ...$collections);
     }
@@ -685,7 +686,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function flip()
+    public function flip(): Collection
     {
         return flip($this->getItems());
     }
@@ -696,7 +697,7 @@ trait CollectionTrait
      * @param mixed $key
      * @return bool
      */
-    public function has($key)
+    public function has(mixed $key): bool
     {
         return has($this->getItems(), $key);
     }
@@ -705,10 +706,10 @@ trait CollectionTrait
      * Returns a lazy collection of non-lazy collections of items from nth position from this collection and each
      * passed collection. Stops when any of the collections don't have an item at the nth position.
      *
-     * @param array|\Traversable ...$collections
+     * @param iterable ...$collections
      * @return Collection
      */
-    public function zip(...$collections)
+    public function zip(iterable ...$collections): Collection
     {
         array_unshift($collections, $this->getItems());
 
@@ -722,7 +723,7 @@ trait CollectionTrait
      * @return Collection
      * @throws InvalidReturnValue
      */
-    public function transform(callable $transformer)
+    public function transform(callable $transformer): Collection
     {
         $items = $this->getItems();
 
@@ -741,7 +742,7 @@ trait CollectionTrait
      *
      * @return Collection
      */
-    public function transpose()
+    public function transpose(): Collection
     {
         return transpose($this->getItems());
     }
@@ -753,7 +754,7 @@ trait CollectionTrait
      * @param mixed $keyPath
      * @return Collection
      */
-    public function extract($keyPath)
+    public function extract(mixed $keyPath): Collection
     {
         return \DusanKasan\Knapsack\extract($this->getItems(), $keyPath);
     }
@@ -765,7 +766,7 @@ trait CollectionTrait
      * @param array|\Traversable ...$collections
      * @return Collection
      */
-    public function intersect(...$collections)
+    public function intersect(iterable ...$collections): Collection
     {
         return intersect($this->getItems(), ...$collections);
     }
@@ -776,7 +777,7 @@ trait CollectionTrait
      * @param int $size
      * @return bool
      */
-    public function sizeIs($size)
+    public function sizeIs(int $size): bool
     {
         return sizeIs($this->getItems(), $size);
     }
@@ -787,7 +788,7 @@ trait CollectionTrait
      * @param int $size
      * @return bool
      */
-    public function sizeIsLessThan($size)
+    public function sizeIsLessThan(int $size): bool
     {
         return sizeIsLessThan($this->getItems(), $size);
     }
@@ -798,7 +799,7 @@ trait CollectionTrait
      * @param int $size
      * @return bool
      */
-    public function sizeIsGreaterThan($size)
+    public function sizeIsGreaterThan(int $size): bool
     {
         return sizeIsGreaterThan($this->getItems(), $size);
     }
@@ -811,7 +812,7 @@ trait CollectionTrait
      * @param int $toSize
      * @return bool
      */
-    public function sizeIsBetween($fromSize, $toSize)
+    public function sizeIsBetween(int $fromSize, int $toSize): bool
     {
         return sizeIsBetween($this->getItems(), $fromSize, $toSize);
     }
@@ -821,7 +822,7 @@ trait CollectionTrait
      *
      * @return int|float
      */
-    public function sum()
+    public function sum(): int|float
     {
         return sum($this->getItems());
     }
@@ -831,7 +832,7 @@ trait CollectionTrait
      *
      * @return int|float
      */
-    public function average()
+    public function average(): int|float
     {
         return average($this->getItems());
     }
@@ -841,7 +842,7 @@ trait CollectionTrait
      *
      * @return mixed
      */
-    public function max()
+    public function max(): mixed
     {
         return \DusanKasan\Knapsack\max($this->getItems());
     }
@@ -851,7 +852,7 @@ trait CollectionTrait
      *
      * @return mixed
      */
-    public function min()
+    public function min(): mixed
     {
         return \DusanKasan\Knapsack\min($this->getItems());
     }
@@ -861,7 +862,7 @@ trait CollectionTrait
      *
      * @return string
      */
-    public function toString()
+    public function toString(): string
     {
         return toString($this->getItems());
     }
@@ -870,10 +871,10 @@ trait CollectionTrait
      * Returns a lazy collection with items from $collection, but items with keys  that are found in keys of
      * $replacementMap are replaced by their values.
      *
-     * @param array|\Traversable $replacementMap
+     * @param iterable $replacementMap
      * @return Collection
      */
-    public function replaceByKeys($replacementMap)
+    public function replaceByKeys(iterable $replacementMap): Collection
     {
         return replaceByKeys($this->getItems(), $replacementMap);
     }
@@ -902,7 +903,7 @@ trait CollectionTrait
      * @param int|null $maxDepth
      * @return array
      */
-    public function dump($maxItemsPerCollection = null, $maxDepth = null)
+    public function dump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): array
     {
         return dump($this->getItems(), $maxItemsPerCollection, $maxDepth);
     }
@@ -914,15 +915,15 @@ trait CollectionTrait
      * @param int|null $maxDepth
      * @return Collection
      */
-    public function printDump($maxItemsPerCollection = null, $maxDepth = null)
+    public function printDump(?int $maxItemsPerCollection = null, ?int $maxDepth = null): Collection
     {
         return printDump($this->getItems(), $maxItemsPerCollection, $maxDepth);
     }
 
     /**
-     * @return array|\Traversable
+     * @return iterable
      */
-    protected function getItems()
+    protected function getItems(): iterable
     {
         return $this;
     }
