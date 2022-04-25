@@ -216,12 +216,12 @@ class Collection implements CollectionInterface
 
     final public function getIterator(): Traversable
     {
-        return $this->it;
+        return $this->it = new ArrayIterator(iterable_to_array($this->it));
     }
 
     public function toTraversable(): Traversable
     {
-        return iterable_to_traversable($this->it);
+        return $this->it = iterable_to_traversable($this->it);
     }
 
     public function getOrDefault(mixed $key, mixed $default = null, bool $convertToCollection = false): mixed
