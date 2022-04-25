@@ -2487,6 +2487,6 @@ final class FunctionsTest extends TestCase
         $input = $input->map(fn (int $number) => $number * 2)
             ->values();
 
-        $this->assertEquals([8, 12], $input->toArray());
+        $this->assertEquals([8, 12], $input->toArrayRecursive());
     }
 }
