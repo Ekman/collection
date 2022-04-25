@@ -228,7 +228,7 @@ class Collection implements CollectionInterface
             $this->it = $it;
         }
 
-        return $it;
+        return $this->it;
     }
 
     public function toTraversable(): Traversable
