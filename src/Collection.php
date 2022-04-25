@@ -183,8 +183,7 @@ class Collection implements CollectionInterface
     public function find(callable $find, mixed $default = null, bool $convertToCollection = false): mixed
     {
         $result = iterable_find($this->it, $find, $default);
-
-        return $result && is_iterable($result) ? new self($result) : $result;
+        return $convertToCollection && is_iterable($result) ? new self($result) : $result;
     }
 
     public function first(bool $convertToCollection = false): mixed
@@ -396,7 +395,7 @@ class Collection implements CollectionInterface
     public function second(bool $convertToCollection = false): mixed
     {
         $second = iterable_second($this->it);
-        return $second && is_iterable($second) ? new self($second) : $second;
+        return $convertToCollection && is_iterable($second) ? new self($second) : $second;
     }
 
     public function shuffle(): self
