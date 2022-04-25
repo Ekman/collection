@@ -979,16 +979,3 @@ function iterable_shuffle(iterable $it): iterable
 
     return iterable_dereference_key_value($buffer);
 }
-
-function duplicate(mixed $input): mixed
-{
-    if (is_array($input)) {
-        return array_map(fn ($i) => duplicate($i), $input);
-    }
-
-    if (is_object($input)) {
-        return clone $input;
-    }
-
-    return $input;
-}

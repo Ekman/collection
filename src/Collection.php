@@ -23,7 +23,7 @@ class Collection implements CollectionInterface
             throw new InvalidArgument;
         }
 
-        $this->it = is_array($it) ? new ArrayIterator($it) : $it;
+        $this->it = $it;
     }
 
     public static function from(iterable|callable $it = []): self
@@ -48,7 +48,7 @@ class Collection implements CollectionInterface
 
     public function __clone(): void
     {
-        $this->it = clone $this->it;
+        $this->it = duplicate($this->it);
     }
 
     final public function __serialize(): array

@@ -2488,5 +2488,21 @@ final class FunctionsTest extends TestCase
             ->values();
 
         $this->assertEquals([8, 12], $input->toArrayRecursive());
+
+        $result = [];
+
+        foreach ($input as $key => $value) {
+            $result[$key] = $value;
+        }
+
+        $this->assertEquals([8, 12], $result);
+
+        $result = [];
+
+        foreach ($input as $key => $value) {
+            $result[$key] = $value;
+        }
+
+        $this->assertEquals([8, 12], $result);
     }
 }
