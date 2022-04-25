@@ -379,10 +379,12 @@ function iterable_sum(iterable $it): float|int
 
 function iterable_to_array(iterable $it, bool $onlyValues = false): array
 {
+    if (is_array($it)) {
+        return $onlyValues ? array_values($it) : $it;
+    }
+
     if ($onlyValues) {
         $it = iterable_values($it);
-    } elseif (is_array($it)) {
-        return $it;
     }
 
     return iterator_to_array(
@@ -416,7 +418,7 @@ function iterable_realize(iterable $it): iterable
 
 function iterable_to_traversable(iterable $it): Traversable
 {
-    return $it;
+    yield from $it;
 }
 
 function iterable_keys(iterable $it): iterable
