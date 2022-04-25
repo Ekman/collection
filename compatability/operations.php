@@ -3,8 +3,6 @@
 namespace DusanKasan\Knapsack;
 
 use DeepCopy\DeepCopy;
-use Nekman\Collection\Exceptions\ItemNotFound;
-use Nekman\Collection\Exceptions\NoMoreItems;
 use function Nekman\Collection\iterable_append;
 use function Nekman\Collection\iterable_average;
 use function Nekman\Collection\iterable_combine;
@@ -575,7 +573,15 @@ function isCollection(mixed $input): bool
  */
 function duplicate(mixed $input): mixed
 {
-    return (new DeepCopy)->copy($input);
+    if (is_array($input)) {
+        return iterable_to_array(
+            iterable_map($input, fn ($item) => duplicate($item))
+        );
+    } elseif (is_object($input)) {
+        return clone $input;
+    } else {
+        return $input;
+    }
 }
 
 /**
