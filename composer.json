@@ -48,5 +48,10 @@
     },
     "replace": {
         "dusank/knapsack": "10.*"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
     }
 }
