@@ -568,8 +568,7 @@ function isCollection(mixed $input): bool
 }
 
 /**
- * @deprecated The duplicate function will be removed. See alternative solutions, e.g. the myclabs/deep-copy package.
- * @see DeepCopy::copy()
+ * @deprecated The duplicate function will be removed
  */
 function duplicate(mixed $input): mixed
 {
