@@ -3,7 +3,6 @@
 namespace DusanKasan\Knapsack;
 
 use ArrayIterator;
-use Closure;
 use DusanKasan\Knapsack\Exceptions\InvalidArgument;
 use DusanKasan\Knapsack\Exceptions\InvalidReturnValue;
 use IteratorAggregate;
